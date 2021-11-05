@@ -1,18 +1,23 @@
 package org.firstinspires.ftc.teamcode.tests;
 
-
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 
 import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
+import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
+import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.SwitchableLight;
+
 
 @Autonomous(name = "AutoStraferTest", group = "Test")
 public class AutoStraferTest extends LinearOpMode {
@@ -38,58 +43,25 @@ public class AutoStraferTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException{
-      //Motor Hardware Map:
-        //Defines motors and direction
+
+        //Setting up and initializing hardware
         configureMotors(hardwareMap, "motor1", "motor2", "motor3", "motor4", "motor5", "motor6", "rightHand", "leftHand");
+        setMotorDirection(FORWARD, REVERSE);
+        setZeroPowerBehavior(BRAKE);
+        setMotorPower(0);
 
+        setMotorEncoderMode(STOP_AND_RESET_ENCODER);
+        setMotorEncoderMode(RUN_USING_ENCODER);
 
+        leftHand.setPosition(0.6);
+        rightHand.setPosition(0.26);
 
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "color_sensor");
 
-        //SET DIRECTIONS
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection((DcMotor.Direction.FORWARD));
-        backRight.setDirection(DcMotor.Direction.FORWARD);
-
-        rightArm.setDirection(DcMotor.Direction.FORWARD);
-        leftArm.setDirection(DcMotor.Direction.FORWARD);
-
-        rightHand.setDirection(Servo.Direction.FORWARD);
-        leftHand.setDirection(Servo.Direction.REVERSE);
-
-        //ENCODER SET MODES
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //SET ZERO POWER BEHAVIOR
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        //Set Motors to Use No Power
-        frontRight.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        backLeft.setPower(0);
-
-        rightHand.setPosition(0);
-        leftHand.setPosition(0);
-
-        //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-        telemetry.addData("status", "Initialized");
+        telemetry.addData("Status: ", "Initialized");
         telemetry.update();
+        //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-        //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
         //Motor Run to Position
 
         /* Encoder for Movement
@@ -102,9 +74,13 @@ public class AutoStraferTest extends LinearOpMode {
         rightTargetPosition = frontRight.getCurrentPosition() + (int)(rightInches * TICKS_PER_INCH);
         frontLeft.setTargetPosition(leftTargetPosition);
         frontRight.setTargetPosition(rightTargetPosition);
+
+        telemetry.addData("Target Position: ", leftTargetPosition);
+        telemetry.addData("Target Position: ", rightTargetPosition);
+
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         */
-
-
 
         waitForStart();
 
@@ -119,7 +95,7 @@ public class AutoStraferTest extends LinearOpMode {
 
             Color.colorToHSV(colors.toColor(), hsvValues);
 
-            //Outputs Color Data
+            /*Outputs Color Data
             telemetry.addData("Path0",  "Starting at %7d ",
                     frontRight.getCurrentPosition());
             telemetry.addLine()
@@ -131,14 +107,10 @@ public class AutoStraferTest extends LinearOpMode {
                     .addData("Saturation", "%.3f", hsvValues[1])
                     .addData("Value", "%.3f", hsvValues[2]);
             telemetry.addData("Alpha", "%.3f", colors.alpha);
-            telemetry.update();
+            telemetry.update();*/
 
 
-            //telemetry.addData("Target Position: ", leftTargetPosition);
-            //telemetry.addData("Target Position: ", rightTargetPosition);
 
-            //frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            //frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             if ((colors.red/colors.blue) > 1.5 && (colors.red/colors.green) > 1.5){
                 //Stops Motors
@@ -197,5 +169,41 @@ public class AutoStraferTest extends LinearOpMode {
         leftHand = hw.servo.get(lhName);
     }
 
+    public void setMotorDirection(Direction f, Direction r){
+        frontLeft.setDirection(r);
+        backLeft.setDirection(r);
+        frontRight.setDirection(f);
+        backRight.setDirection(f);
+        rightArm.setDirection(f);
+        leftArm.setDirection(f);
+        rightHand.setDirection(Servo.Direction.FORWARD);
+        leftHand.setDirection(Servo.Direction.REVERSE);
+    }
 
+    public void setZeroPowerBehavior(ZeroPowerBehavior z){
+        frontRight.setZeroPowerBehavior(z);
+        frontLeft.setZeroPowerBehavior(z);
+        backRight.setZeroPowerBehavior(z);
+        backLeft.setZeroPowerBehavior(z);
+        rightArm.setZeroPowerBehavior(z);
+        leftArm.setZeroPowerBehavior(z);
+    }
+
+    public void setMotorPower(int n){
+        frontRight.setPower(n);
+        frontLeft.setPower(n);
+        backRight.setPower(n);
+        backLeft.setPower(n);
+        rightArm.setPower(n);
+        leftArm.setPower(n);
+    }
+
+    public void setMotorEncoderMode(RunMode r) {
+        frontRight.setMode(r);
+        frontLeft.setMode(r);
+        backRight.setMode(r);
+        backLeft.setMode(r);
+        rightArm.setMode(r);
+        leftArm.setMode(r);
+    }
 }
