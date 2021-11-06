@@ -34,6 +34,8 @@ public class FirstBasicMovement extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException{
+
+        //Set up motors and initialization
         configureMotors(hardwareMap, "motor1", "motor2", "motor3", "motor4", "motor5", "motor6", "rightHand", "leftHand");
         setMotorDirection(FORWARD, REVERSE);
         setZeroPowerBehavior(BRAKE);
