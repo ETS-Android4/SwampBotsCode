@@ -39,8 +39,6 @@ public class AutoStraferTest extends LinearOpMode {
     static final double WHEEL_DIAMETER_INCHES = 3.93701;
     static final double TICKS_PER_INCH = TICKS_PER_MOTOR_REV / (WHEEL_DIAMETER_INCHES * 3.141592);
 
-    //Movement Methods
-
     @Override
     public void runOpMode() throws InterruptedException{
 
