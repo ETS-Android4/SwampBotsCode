@@ -12,7 +12,6 @@ public class EncoderTest extends LinearOpMode {
     private DcMotor frontLeft;
     private DcMotor backRight;
     private DcMotor backLeft;
-   // OpticalDistanceSensor odsSensor;  // Hardware Device Object
 
     static final double COUNTS_PER_MOTOR_REV = 537.7;
     static final double WHEEL_DIAMETER_INCHES = 3.93701;
@@ -27,8 +26,6 @@ public class EncoderTest extends LinearOpMode {
         frontLeft = hardwareMap.dcMotor.get("motor2");
         backRight = hardwareMap.dcMotor.get("motor3");
         backLeft = hardwareMap.dcMotor.get("motor4");
-
-        //odsSensor = hardwareMap.get(OpticalDistanceSensor.class, "sensor_ods");
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -79,8 +76,7 @@ public class EncoderTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()){
-            telemetry.addData("Path0",  "Starting at %7d ",
-                    frontRight.getCurrentPosition());
+            telemetry.addData("Path0",  "Starting at %7d ", frontRight.getCurrentPosition());
             telemetry.update();
 
             telemetry.addData("Target Position: ", leftTargetPosition);

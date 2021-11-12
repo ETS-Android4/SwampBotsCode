@@ -33,11 +33,13 @@ public class AutoStraferTest extends LinearOpMode {
     private Servo rightHand;
     private Servo leftHand;
 
-    private NormalizedColorSensor colorSensor;
+    //private NormalizedColorSensor colorSensor;
 
-    static final double TICKS_PER_MOTOR_REV = 537.7;
+    static final double COUNTS_PER_MOTOR_REV = 537.7;
     static final double WHEEL_DIAMETER_INCHES = 3.93701;
-    static final double TICKS_PER_INCH = TICKS_PER_MOTOR_REV / (WHEEL_DIAMETER_INCHES * 3.141592);
+    static final double COUNTS_PER_INCH = COUNTS_PER_MOTOR_REV / (WHEEL_DIAMETER_INCHES * 3.141592);
+
+    int count = 0;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -54,7 +56,7 @@ public class AutoStraferTest extends LinearOpMode {
         leftHand.setPosition(0.6);
         rightHand.setPosition(0.26);
 
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "color_sensor");
+        //colorSensor = hardwareMap.get(NormalizedColorSensor.class, "color_sensor");
 
         telemetry.addData("Status: ", "Initialized");
         telemetry.update();
@@ -62,36 +64,30 @@ public class AutoStraferTest extends LinearOpMode {
 
         //Motor Run to Position
 
-        /* Encoder for Movement
-        int leftTargetPosition;
-        int rightTargetPosition;
-        int leftInches = 280;
-        int rightInches = 280;
+        //Encoder for Movement
 
-        leftTargetPosition = frontLeft.getCurrentPosition() + (int)(leftInches * TICKS_PER_INCH);
-        rightTargetPosition = frontRight.getCurrentPosition() + (int)(rightInches * TICKS_PER_INCH);
-        frontLeft.setTargetPosition(leftTargetPosition);
-        frontRight.setTargetPosition(rightTargetPosition);
 
-        telemetry.addData("Target Position: ", leftTargetPosition);
-        telemetry.addData("Target Position: ", rightTargetPosition);
-
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        */
 
         waitForStart();
 
         while (opModeIsActive()){
 
+            if (count == 0){
+                moveBackward(5.0);
+                count++;
+            }
 
+            moveBackwardPower(0.8);
 
-            colorSensor.setGain(5);
+            telemetry.addData("Count: ", count);
+
+            /*colorSensor.setGain(5);
+
             final float[] hsvValues = new float[3];
 
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
 
-            Color.colorToHSV(colors.toColor(), hsvValues);
+            Color.colorToHSV(colors.toColor(), hsvValues);*/
 
             /*Outputs Color Data
             telemetry.addData("Path0",  "Starting at %7d ",
@@ -110,13 +106,13 @@ public class AutoStraferTest extends LinearOpMode {
 
 
 
-            if ((colors.red/colors.blue) > 1.5 && (colors.red/colors.green) > 1.5){
+            /*if ((colors.red/colors.blue) > 1.5 && (colors.red/colors.green) > 1.5){
                 //Stops Motors
                 stopMoving();
             } else {
                 //Move Forward
                 moveForward(0.6);
-            }
+            }*/
 
         }
     }
@@ -142,12 +138,41 @@ public class AutoStraferTest extends LinearOpMode {
         backRight.setPower(power);
     }
 
-    public void moveBackward(double power){
-        frontLeft.setPower(-power);
-        frontRight.setPower(-power);
-        backLeft.setPower(-power);
-        backRight.setPower(-power);
+    public void moveBackwardPower(double p){
+        frontLeft.setPower(p);
+        frontRight.setPower(p);
+        backLeft.setPower(p);
+        backRight.setPower(p);
+
+        telemetry.addData("Power: ", p);
     }
+
+    public void moveBackward(double d){
+        double distance = 8;
+
+        int targetPosition = frontLeft.getCurrentPosition() + (int)(-distance * COUNTS_PER_INCH);
+        frontLeft.setTargetPosition(targetPosition);
+        frontRight.setTargetPosition(targetPosition);
+        backLeft.setTargetPosition(targetPosition);
+        backRight.setTargetPosition(targetPosition);
+
+        telemetry.addData("Target Position: ", targetPosition);
+        telemetry.addData("Target Position: ", targetPosition);
+
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        /*
+        frontLeft.setPower(Math.abs(0.6));
+        frontRight.setPower(Math.abs(0.6));
+        backLeft.setPower(Math.abs(0.6));
+        backRight.setPower(Math.abs(0.6));
+         */
+    }
+
+
 
     public void stopMoving(){
         frontRight.setPower(0);

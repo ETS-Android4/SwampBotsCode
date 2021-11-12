@@ -30,13 +30,15 @@ public class FirstBasicMovement extends LinearOpMode {
     //Hand Servos
     private Servo leftHand;
     private Servo rightHand;
+    
+    private DcMotor carousselMotor;
 
 
     @Override
     public void runOpMode() throws InterruptedException{
 
         //Set up motors and initialization
-        configureMotors(hardwareMap, "motor1", "motor2", "motor3", "motor4", "motor5", "motor6", "rightHand", "leftHand");
+        configureMotors(hardwareMap, "motor1", "motor2", "motor3", "motor4", "motor5", "motor6", "rightHand", "leftHand", "carrouselMotor");
         setMotorDirection(FORWARD, REVERSE);
         setZeroPowerBehavior(BRAKE);
         setMotorPower(0);
@@ -61,6 +63,9 @@ public class FirstBasicMovement extends LinearOpMode {
             double pivot;
 
             double armVertical;
+            
+            double carousselMotorPowerF = gamepad1.right_trigger;
+            double carousselMotorPowerR = gamepad1.left_trigger;
 
             double leftHandCurrentPos;
             double rightHandCurrentPos;
@@ -68,17 +73,25 @@ public class FirstBasicMovement extends LinearOpMode {
 
             //Defines direction that motors move based on their orientation to one another
             vertical = gamepad1.left_stick_y;
-            horizontal = -gamepad1.left_stick_x;
-            pivot = -gamepad1.right_stick_x;
+            horizontal = gamepad1.left_stick_x;
+            pivot = gamepad1.right_stick_x;
 
-            frontRight.setPower(-(-pivot + vertical - horizontal));
-            backRight.setPower(-(-pivot + vertical + horizontal));
-            frontLeft.setPower(-(pivot + vertical + horizontal));
-            backLeft.setPower(-(pivot + vertical - horizontal));
+            frontRight.setPower(-pivot + vertical - horizontal);
+            backRight.setPower(-pivot + vertical + horizontal);
+            frontLeft.setPower(pivot + vertical + horizontal);
+            backLeft.setPower(pivot + vertical - horizontal);
 
             armVertical = gamepad2.left_stick_y;
             leftArm.setPower(armVertical * 0.6);
             rightArm.setPower(armVertical * 0.6);
+            
+            if(gamepad1.right_trigger > 0){
+                carousselMotor.setPower(carousselMotorPowerF);
+            } else if(gamepad1.left_trigger > 0){
+                carousselMotor.setPower(-carousselMotorPowerR);
+            } else {
+                carousselMotor.setPower(0);
+            }
 
             //Servo Controls
             telemetry.addData("Right Hand Position: ", rightHand.getPosition());
@@ -114,7 +127,7 @@ public class FirstBasicMovement extends LinearOpMode {
         }
     }
 
-    public void configureMotors(HardwareMap hw, String rfName, String lfName, String rbName, String lbName, String raName, String laName, String rhName, String lhName){
+    public void configureMotors(HardwareMap hw, String rfName, String lfName, String rbName, String lbName, String raName, String laName, String rhName, String lhName, String cName){
         frontRight = hw.dcMotor.get(rfName);
         frontLeft = hw.dcMotor.get(lfName);
         backRight = hw.dcMotor.get(rbName);
@@ -123,6 +136,7 @@ public class FirstBasicMovement extends LinearOpMode {
         leftArm = hw.dcMotor.get(laName);
         rightHand = hw.servo.get(rhName);
         leftHand = hw.servo.get(lhName);
+        carousselMotor = hw.dcMotor.get(cName);
     }
 
     public void setMotorDirection(Direction f, Direction r){
@@ -134,6 +148,7 @@ public class FirstBasicMovement extends LinearOpMode {
         leftArm.setDirection(f);
         rightHand.setDirection(Servo.Direction.FORWARD);
         leftHand.setDirection(Servo.Direction.REVERSE);
+        carousselMotor.setDirection(r);
     }
 
     public void setZeroPowerBehavior(ZeroPowerBehavior z){
@@ -143,6 +158,7 @@ public class FirstBasicMovement extends LinearOpMode {
         backLeft.setZeroPowerBehavior(z);
         rightArm.setZeroPowerBehavior(z);
         leftArm.setZeroPowerBehavior(z);
+        carousselMotor.setZeroPowerBehavior(z);
     }
 
     public void setMotorPower(int n){
@@ -152,6 +168,7 @@ public class FirstBasicMovement extends LinearOpMode {
         backLeft.setPower(n);
         rightArm.setPower(n);
         leftArm.setPower(n);
+        carousselMotor.setPower(n);
     }
 
     public void setMotorEncoderMode(RunMode r) {
@@ -161,5 +178,6 @@ public class FirstBasicMovement extends LinearOpMode {
         backLeft.setMode(r);
         rightArm.setMode(r);
         leftArm.setMode(r);
+        carousselMotor.setMode(r);
     }
 }
