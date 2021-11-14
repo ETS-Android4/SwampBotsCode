@@ -47,8 +47,8 @@ public class FirstBasicMovement extends LinearOpMode {
         setMotorEncoderMode(RUN_USING_ENCODER);
 
         //Setting Initial Servo Positions
-        leftHand.setPosition(0.6);
-        rightHand.setPosition(0.26);
+        leftHand.setPosition(0.75);
+        rightHand.setPosition(0.44);
 
       //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
@@ -72,8 +72,8 @@ public class FirstBasicMovement extends LinearOpMode {
 
 
             //Defines direction that motors move based on their orientation to one another
-            vertical = gamepad1.left_stick_y;
-            horizontal = gamepad1.left_stick_x;
+            vertical = -gamepad1.left_stick_y;
+            horizontal = -gamepad1.left_stick_x;
             pivot = gamepad1.right_stick_x;
 
             frontRight.setPower(-pivot + vertical - horizontal);
@@ -97,16 +97,16 @@ public class FirstBasicMovement extends LinearOpMode {
             telemetry.addData("Right Hand Position: ", rightHand.getPosition());
             telemetry.addData("Left Hand Position: ", leftHand.getPosition());
 
-            if (gamepad2.left_bumper){ //open position
-                leftHand.setPosition(0.6);
-                rightHand.setPosition(0.26);
+            if (gamepad2.left_bumper){ //closed position
+                leftHand.setPosition(0.85);
+                rightHand.setPosition(0.54);
                 leftHandCurrentPos = leftHand.getPosition();
                 rightHandCurrentPos = rightHand.getPosition();
             }
 
-            if (gamepad2.right_bumper){ //closed position
-                leftHand.setPosition(0.52);
-                rightHand.setPosition(0.19);
+            if (gamepad2.right_bumper){ //opened position
+                leftHand.setPosition(0.75);
+                rightHand.setPosition(0.44);
                 leftHandCurrentPos = leftHand.getPosition();
                 rightHandCurrentPos = rightHand.getPosition();
             }

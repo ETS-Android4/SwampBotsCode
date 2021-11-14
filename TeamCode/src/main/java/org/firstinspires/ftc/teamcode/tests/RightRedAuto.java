@@ -1,23 +1,23 @@
 package org.firstinspires.ftc.teamcode.tests;
 
-import android.graphics.Color;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
-import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
+
+import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@Autonomous(name = "RightBlueAuto", group = "Blue")
-public class RightBlueAuto extends LinearOpMode {
+@Autonomous(name = "RightRedAuto", group = "Red")
+public class RightRedAuto extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private DcMotor frontRight;
@@ -50,15 +50,15 @@ public class RightBlueAuto extends LinearOpMode {
         cMotor.setDirection(DcMotor.Direction.FORWARD);
 
         //Encoders
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(RunMode.STOP_AND_RESET_ENCODER);
+        frontLeft.setMode(RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(RunMode.STOP_AND_RESET_ENCODER);
 
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRight.setMode(RunMode.RUN_USING_ENCODER);
+        frontLeft.setMode(RunMode.RUN_USING_ENCODER);
+        backRight.setMode(RunMode.RUN_USING_ENCODER);
+        backLeft.setMode(RunMode.RUN_USING_ENCODER);
 
         //Set ZERO POWER BEHAVIOR
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -113,17 +113,9 @@ public class RightBlueAuto extends LinearOpMode {
             telemetry.addData("Alpha", "%.3f", colors.alpha);
             telemetry.update();
 
-            moveBackward(4);
+            strafeLeft(18);
             sleep(500);
-            strafeLeft(14);
-            sleep(500);
-            cMotor.setPower(-1);
-            sleep(4000);
-            cMotor.setPower(0);
-            sleep(500);
-            moveBackward(23);
-            sleep(500);
-            strafeLeft(5);
+            moveForward(60);
             counter++;
         }
     }
@@ -145,7 +137,7 @@ public class RightBlueAuto extends LinearOpMode {
 
         //Run the encoder and set power for robot to move
         setWheelEncoderMode(RUN_TO_POSITION);
-        setWheelPower(0.5);
+        setWheelPower(1);
 
         while (opModeIsActive() &&
                 (runtime.seconds() < 30) &&
@@ -271,11 +263,16 @@ public class RightBlueAuto extends LinearOpMode {
 
         int targetPosition = frontLeft.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
 
-        //Run the encoder and set power for robot to move
         frontLeft.setTargetPosition(-targetPosition);
         frontRight.setTargetPosition(targetPosition);
         backLeft.setTargetPosition(-targetPosition);
         backRight.setTargetPosition(targetPosition);
+
+        telemetry.addData("Front Left Target Position: ", -targetPosition);
+        telemetry.addData("Front Right Target Position: ", targetPosition);
+        telemetry.addData("Back Left Target Position: ", -targetPosition);
+        telemetry.addData("Back Right Target Position: ", targetPosition);
+        telemetry.update();
 
         setWheelEncoderMode(RUN_TO_POSITION);
         setWheelPower(0.5);

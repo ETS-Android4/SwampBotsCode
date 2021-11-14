@@ -118,7 +118,7 @@ public class RightBlueAuto extends LinearOpMode {
             strafeLeft(14);
             sleep(500);
             cMotor.setPower(-1);
-            sleep(4000);
+            sleep(5000);
             cMotor.setPower(0);
             sleep(500);
             moveBackward(23);
@@ -142,6 +142,12 @@ public class RightBlueAuto extends LinearOpMode {
         frontRight.setTargetPosition(targetPosition);
         backLeft.setTargetPosition(targetPosition);
         backRight.setTargetPosition(targetPosition);
+
+        telemetry.addData("Front Left Target Position: ", targetPosition);
+        telemetry.addData("Front Right Target Position: ", targetPosition);
+        telemetry.addData("Back Left Target Position: ", targetPosition);
+        telemetry.addData("Back Right Target Position: ", targetPosition);
+        telemetry.update();
 
         //Run the encoder and set power for robot to move
         setWheelEncoderMode(RUN_TO_POSITION);
@@ -170,15 +176,21 @@ public class RightBlueAuto extends LinearOpMode {
     public void moveBackward(int inches){
         setWheelEncoderMode(STOP_AND_RESET_ENCODER);
 
-        int targetPosition = frontLeft.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+        int targetPosition = frontLeft.getCurrentPosition() + (int)(-inches * COUNTS_PER_INCH);
 
-        frontLeft.setTargetPosition(-targetPosition);
-        frontRight.setTargetPosition(-targetPosition);
-        backLeft.setTargetPosition(-targetPosition);
-        backRight.setTargetPosition(-targetPosition);
+        frontLeft.setTargetPosition(targetPosition);
+        frontRight.setTargetPosition(targetPosition);
+        backLeft.setTargetPosition(targetPosition);
+        backRight.setTargetPosition(targetPosition);
 
-        //Run the encoder and set power for robot to move
+        telemetry.addData("Front Left Target Position: ", targetPosition);
+        telemetry.addData("Front Right Target Position: ", targetPosition);
+        telemetry.addData("Back Left Target Position: ", targetPosition);
+        telemetry.addData("Back Right Target Position: ", targetPosition);
+        telemetry.update();
+
         setWheelEncoderMode(RUN_TO_POSITION);
+
         setWheelPower(0.5);
 
         while (opModeIsActive() &&
@@ -192,25 +204,35 @@ public class RightBlueAuto extends LinearOpMode {
                     frontLeft.getCurrentPosition(),
                     backRight.getCurrentPosition(),
                     backLeft.getCurrentPosition());
+
             telemetry.update();
         }
 
-        // Stop all motion and stop running encoder
+        // Stop all motion;
         setWheelPower(0);
+
+        // Turn off RUN_TO_POSITION
         setWheelEncoderMode(RUN_USING_ENCODER);
     }
 
     public void strafeRight(int inches){
         setWheelEncoderMode(STOP_AND_RESET_ENCODER);
 
-        int targetPosition = frontLeft.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+        int forwardTargetPosition = frontLeft.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+        int backwardTargetPosition = frontRight.getCurrentPosition() + (int)(-inches * COUNTS_PER_INCH);
 
-        frontLeft.setTargetPosition(-targetPosition);
-        frontRight.setTargetPosition(targetPosition);
-        backLeft.setTargetPosition(targetPosition);
-        backRight.setTargetPosition(-targetPosition);
 
-        //Run the encoder and set power for robot to move
+        frontLeft.setTargetPosition(backwardTargetPosition);
+        frontRight.setTargetPosition(forwardTargetPosition);
+        backLeft.setTargetPosition(forwardTargetPosition);
+        backRight.setTargetPosition(backwardTargetPosition);
+
+        telemetry.addData("Front Left Target Position: ", forwardTargetPosition);
+        telemetry.addData("Front Right Target Position: ", backwardTargetPosition);
+        telemetry.addData("Back Left Target Position: ", backwardTargetPosition);
+        telemetry.addData("Back Right Target Position: ", forwardTargetPosition);
+        telemetry.update();
+
         setWheelEncoderMode(RUN_TO_POSITION);
         setWheelPower(0.5);
 
@@ -219,31 +241,43 @@ public class RightBlueAuto extends LinearOpMode {
                 (frontLeft.isBusy() && frontRight.isBusy() && backRight.isBusy() && backLeft.isBusy())) {
 
             // Display it for the driver.
-            telemetry.addData("Path1",  "Running to %7d : %7d", targetPosition, -targetPosition);
+            telemetry.addData("Path1",  "Running to %7d : %7d", forwardTargetPosition, backwardTargetPosition);
             telemetry.addData("Path2", "Current Position %7d:%7d:%7d:%7d",
                     frontRight.getCurrentPosition(),
                     frontLeft.getCurrentPosition(),
                     backRight.getCurrentPosition(),
                     backLeft.getCurrentPosition());
+            telemetry.addData("FrontR Pow", frontRight.getPower());
+            telemetry.addData("BackR Pow", backRight.getPower());
+            telemetry.addData("FrontL Pow", frontLeft.getPower());
+            telemetry.addData("BackL Pow", backLeft.getPower());
             telemetry.update();
         }
 
-        // Stop all motion and stop running encoders
+        // Stop all motion;
         setWheelPower(0);
         setWheelEncoderMode(RUN_USING_ENCODER);
+
     }
 
     public void strafeLeft(int inches){
         setWheelEncoderMode(STOP_AND_RESET_ENCODER);
 
-        int targetPosition = frontLeft.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+        int forwardTargetPosition = frontLeft.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+        int backwardTargetPosition = frontRight.getCurrentPosition() + (int)(-inches * COUNTS_PER_INCH);
 
-        frontLeft.setTargetPosition(targetPosition);
-        frontRight.setTargetPosition(-targetPosition);
-        backLeft.setTargetPosition(-targetPosition);
-        backRight.setTargetPosition(targetPosition);
 
-        //Run the encoder and set power for robot to move
+        frontLeft.setTargetPosition(forwardTargetPosition);
+        frontRight.setTargetPosition(backwardTargetPosition);
+        backLeft.setTargetPosition(backwardTargetPosition);
+        backRight.setTargetPosition(forwardTargetPosition);
+
+        telemetry.addData("Front Left Target Position: ", forwardTargetPosition);
+        telemetry.addData("Front Right Target Position: ", backwardTargetPosition);
+        telemetry.addData("Back Left Target Position: ", backwardTargetPosition);
+        telemetry.addData("Back Right Target Position: ", forwardTargetPosition);
+        telemetry.update();
+
         setWheelEncoderMode(RUN_TO_POSITION);
         setWheelPower(0.35);
 
@@ -251,19 +285,24 @@ public class RightBlueAuto extends LinearOpMode {
                 (runtime.seconds() < 30) &&
                 (frontLeft.isBusy() && frontRight.isBusy() && backRight.isBusy() && backLeft.isBusy())) {
 
-            //Display it for the driver.
-            telemetry.addData("Path1",  "Running to %7d : %7d", targetPosition, -targetPosition);
+            // Display it for the driver.
+            telemetry.addData("Path1",  "Running to %7d : %7d", forwardTargetPosition, backwardTargetPosition);
             telemetry.addData("Path2", "Current Position %7d:%7d:%7d:%7d",
                     frontRight.getCurrentPosition(),
                     frontLeft.getCurrentPosition(),
                     backRight.getCurrentPosition(),
                     backLeft.getCurrentPosition());
+            telemetry.addData("FrontR Pow", frontRight.getPower());
+            telemetry.addData("BackR Pow", backRight.getPower());
+            telemetry.addData("FrontL Pow", frontLeft.getPower());
+            telemetry.addData("BackL Pow", backLeft.getPower());
             telemetry.update();
         }
 
-        // Stop all motion and stop running encoders
+        // Stop all motion;
         setWheelPower(0);
         setWheelEncoderMode(RUN_USING_ENCODER);
+
     }
 
     public void pivotRight(int inches){
@@ -271,11 +310,16 @@ public class RightBlueAuto extends LinearOpMode {
 
         int targetPosition = frontLeft.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
 
-        //Run the encoder and set power for robot to move
         frontLeft.setTargetPosition(-targetPosition);
         frontRight.setTargetPosition(targetPosition);
         backLeft.setTargetPosition(-targetPosition);
         backRight.setTargetPosition(targetPosition);
+
+        telemetry.addData("Front Left Target Position: ", -targetPosition);
+        telemetry.addData("Front Right Target Position: ", targetPosition);
+        telemetry.addData("Back Left Target Position: ", -targetPosition);
+        telemetry.addData("Back Right Target Position: ", targetPosition);
+        telemetry.update();
 
         setWheelEncoderMode(RUN_TO_POSITION);
         setWheelPower(0.5);
