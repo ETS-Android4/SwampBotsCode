@@ -12,67 +12,57 @@ import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@Autonomous(name = "RightBlueAuto", group = "Blue")
-public class RightBlueAuto extends LinearOpMode {
+@Autonomous(name = "LeftRedAuto", group = "Red")
+public class LeftRedAuto extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private DcMotor frontRight;
     private DcMotor frontLeft;
     private DcMotor backRight;
     private DcMotor backLeft;
+
+    private DcMotor rightArm;
+    private DcMotor leftArm;
+
+    private Servo rightHand;
+    private Servo leftHand;
+
     private DcMotor cMotor;
     private NormalizedColorSensor colorSensor;
 
-    static final double COUNTS_PER_MOTOR_REV = 537.7;
+    static final double TICKS_PER_MOTOR_REV = 537.7;
     static final double WHEEL_DIAMETER_INCHES = 3.93701;
-    static final double COUNTS_PER_INCH = COUNTS_PER_MOTOR_REV / (WHEEL_DIAMETER_INCHES * 3.141592);
+    static final double TICKS_PER_INCH_REV = TICKS_PER_MOTOR_REV / (WHEEL_DIAMETER_INCHES * 3.141592);
 
+    static final double TICKS_PER_MOTOR_HEX = 288.0;
+    static final double TICKS_PER_DEGREE_HEX = TICKS_PER_MOTOR_HEX / 360.0;
 
     @Override
     public void runOpMode() throws InterruptedException{
-        //Hardware Map:
-        //Defines motors and direction
-        frontRight = hardwareMap.dcMotor.get("motor1");
-        frontLeft = hardwareMap.dcMotor.get("motor2");
-        backRight = hardwareMap.dcMotor.get("motor3");
-        backLeft = hardwareMap.dcMotor.get("motor4");
-        cMotor = hardwareMap.dcMotor.get("carrouselMotor");
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "frontRightColor");
 
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection((DcMotor.Direction.FORWARD));
-        backRight.setDirection(DcMotor.Direction.FORWARD);
-        cMotor.setDirection(DcMotor.Direction.FORWARD);
+        //Defines motors and direction
+        configureMotors();
+        setMotorDirection();
+        setZeroPowerBehavior();
 
         //Encoders
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setWheelEncoderMode(STOP_AND_RESET_ENCODER);
+        setWheelEncoderMode(RUN_USING_ENCODER);
+        setArmEncoderMode(STOP_AND_RESET_ENCODER);
+        setArmEncoderMode(RUN_USING_ENCODER);
 
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //Set ZERO POWER BEHAVIOR
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        cMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Set Motors to Use No Power
-        frontRight.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        backLeft.setPower(0);
+        setWheelPower(0);
+        setArmPower(0);
         cMotor.setPower(0);
+        leftHand.setPosition(0.75);
+        rightHand.setPosition(0.44);
 
         //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
@@ -113,43 +103,30 @@ public class RightBlueAuto extends LinearOpMode {
             telemetry.addData("Alpha", "%.3f", colors.alpha);
             telemetry.update();
 
-            moveBackward(4);
-            sleep(500);
-            strafeLeft(14);
-            sleep(500);
-            cMotor.setPower(-1);
-            sleep(5000);
-            cMotor.setPower(0);
-            sleep(500);
-            moveBackward(23);
-            sleep(500);
-            strafeLeft(5);
+            /* KEY FOR LINEAR MOVES
+
+                FORWARD -- All 1's
+                BACKWARD -- All -1's
+                RIGHT -- -1, 1, 1, -1
+                LEFT -- 1, -1, -1, 1
+
+             */
+
+            rotateArm(30);
             counter++;
         }
     }
 
-
-
-
-
-
-    public void moveForward(int inches){
+    public void linearMove(int inches, int flSign, int frSign, int blSign, int brSign){
         setWheelEncoderMode(STOP_AND_RESET_ENCODER);
 
-        int targetPosition = frontLeft.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+        int targetPosition = frontLeft.getCurrentPosition() + (int)(inches * TICKS_PER_INCH_REV);
 
-        frontLeft.setTargetPosition(targetPosition);
-        frontRight.setTargetPosition(targetPosition);
-        backLeft.setTargetPosition(targetPosition);
-        backRight.setTargetPosition(targetPosition);
+        frontLeft.setTargetPosition(flSign * targetPosition);
+        frontRight.setTargetPosition(frSign * targetPosition);
+        backLeft.setTargetPosition(blSign * targetPosition);
+        backRight.setTargetPosition(brSign * targetPosition);
 
-        telemetry.addData("Front Left Target Position: ", targetPosition);
-        telemetry.addData("Front Right Target Position: ", targetPosition);
-        telemetry.addData("Back Left Target Position: ", targetPosition);
-        telemetry.addData("Back Right Target Position: ", targetPosition);
-        telemetry.update();
-
-        //Run the encoder and set power for robot to move
         setWheelEncoderMode(RUN_TO_POSITION);
         setWheelPower(0.5);
 
@@ -168,158 +145,56 @@ public class RightBlueAuto extends LinearOpMode {
             telemetry.update();
         }
 
-        // Stop all motion and stop running the encoder
         setWheelPower(0);
         setWheelEncoderMode(RUN_USING_ENCODER);
     }
 
-    public void moveBackward(int inches){
-        setWheelEncoderMode(STOP_AND_RESET_ENCODER);
+    public void rotateArm(int degrees){
+        setArmEncoderMode(STOP_AND_RESET_ENCODER);
 
-        int targetPosition = frontLeft.getCurrentPosition() + (int)(-inches * COUNTS_PER_INCH);
+        int targetAngle = leftArm.getCurrentPosition() + (int)(degrees * TICKS_PER_DEGREE_HEX);
+        leftArm.setTargetPosition(targetAngle);
+        rightArm.setTargetPosition(targetAngle);
 
-        frontLeft.setTargetPosition(targetPosition);
-        frontRight.setTargetPosition(targetPosition);
-        backLeft.setTargetPosition(targetPosition);
-        backRight.setTargetPosition(targetPosition);
-
-        telemetry.addData("Front Left Target Position: ", targetPosition);
-        telemetry.addData("Front Right Target Position: ", targetPosition);
-        telemetry.addData("Back Left Target Position: ", targetPosition);
-        telemetry.addData("Back Right Target Position: ", targetPosition);
-        telemetry.update();
-
-        setWheelEncoderMode(RUN_TO_POSITION);
-
-        setWheelPower(0.5);
+        setArmEncoderMode(RUN_TO_POSITION);
+        setArmPower(0.3);
 
         while (opModeIsActive() &&
                 (runtime.seconds() < 30) &&
-                (frontLeft.isBusy() && frontRight.isBusy() && backRight.isBusy() && backLeft.isBusy())) {
+                (leftArm.isBusy() && rightArm.isBusy())) {
 
             // Display it for the driver.
-            telemetry.addData("Path1",  "Running to %7d ", targetPosition);
-            telemetry.addData("Path2",  "Running at %7d :%7d",
-                    frontRight.getCurrentPosition(),
-                    frontLeft.getCurrentPosition(),
-                    backRight.getCurrentPosition(),
-                    backLeft.getCurrentPosition());
-
+            telemetry.addData("Path1",  "Rotating to %7d ", targetAngle);
+            telemetry.addData("Path2", "Current Position %7d:%7d",
+                    leftArm.getCurrentPosition(),
+                    rightArm.getCurrentPosition());
             telemetry.update();
         }
 
-        // Stop all motion;
-        setWheelPower(0);
-
-        // Turn off RUN_TO_POSITION
-        setWheelEncoderMode(RUN_USING_ENCODER);
+        setArmPower(0);
+        setArmEncoderMode(RUN_USING_ENCODER);
     }
 
-    public void strafeRight(int inches){
-        setWheelEncoderMode(STOP_AND_RESET_ENCODER);
-
-        int forwardTargetPosition = frontLeft.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
-        int backwardTargetPosition = frontRight.getCurrentPosition() + (int)(-inches * COUNTS_PER_INCH);
-
-
-        frontLeft.setTargetPosition(backwardTargetPosition);
-        frontRight.setTargetPosition(forwardTargetPosition);
-        backLeft.setTargetPosition(forwardTargetPosition);
-        backRight.setTargetPosition(backwardTargetPosition);
-
-        telemetry.addData("Front Left Target Position: ", forwardTargetPosition);
-        telemetry.addData("Front Right Target Position: ", backwardTargetPosition);
-        telemetry.addData("Back Left Target Position: ", backwardTargetPosition);
-        telemetry.addData("Back Right Target Position: ", forwardTargetPosition);
-        telemetry.update();
-
-        setWheelEncoderMode(RUN_TO_POSITION);
-        setWheelPower(0.5);
-
-        while (opModeIsActive() &&
-                (runtime.seconds() < 30) &&
-                (frontLeft.isBusy() && frontRight.isBusy() && backRight.isBusy() && backLeft.isBusy())) {
-
-            // Display it for the driver.
-            telemetry.addData("Path1",  "Running to %7d : %7d", forwardTargetPosition, backwardTargetPosition);
-            telemetry.addData("Path2", "Current Position %7d:%7d:%7d:%7d",
-                    frontRight.getCurrentPosition(),
-                    frontLeft.getCurrentPosition(),
-                    backRight.getCurrentPosition(),
-                    backLeft.getCurrentPosition());
-            telemetry.addData("FrontR Pow", frontRight.getPower());
-            telemetry.addData("BackR Pow", backRight.getPower());
-            telemetry.addData("FrontL Pow", frontLeft.getPower());
-            telemetry.addData("BackL Pow", backLeft.getPower());
-            telemetry.update();
-        }
-
-        // Stop all motion;
-        setWheelPower(0);
-        setWheelEncoderMode(RUN_USING_ENCODER);
-
+    public void grabBlock(){
+        leftHand.setPosition(0.85);
+        rightHand.setPosition(0.54);
     }
 
-    public void strafeLeft(int inches){
-        setWheelEncoderMode(STOP_AND_RESET_ENCODER);
-
-        int forwardTargetPosition = frontLeft.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
-        int backwardTargetPosition = frontRight.getCurrentPosition() + (int)(-inches * COUNTS_PER_INCH);
-
-
-        frontLeft.setTargetPosition(forwardTargetPosition);
-        frontRight.setTargetPosition(backwardTargetPosition);
-        backLeft.setTargetPosition(backwardTargetPosition);
-        backRight.setTargetPosition(forwardTargetPosition);
-
-        telemetry.addData("Front Left Target Position: ", forwardTargetPosition);
-        telemetry.addData("Front Right Target Position: ", backwardTargetPosition);
-        telemetry.addData("Back Left Target Position: ", backwardTargetPosition);
-        telemetry.addData("Back Right Target Position: ", forwardTargetPosition);
-        telemetry.update();
-
-        setWheelEncoderMode(RUN_TO_POSITION);
-        setWheelPower(0.35);
-
-        while (opModeIsActive() &&
-                (runtime.seconds() < 30) &&
-                (frontLeft.isBusy() && frontRight.isBusy() && backRight.isBusy() && backLeft.isBusy())) {
-
-            // Display it for the driver.
-            telemetry.addData("Path1",  "Running to %7d : %7d", forwardTargetPosition, backwardTargetPosition);
-            telemetry.addData("Path2", "Current Position %7d:%7d:%7d:%7d",
-                    frontRight.getCurrentPosition(),
-                    frontLeft.getCurrentPosition(),
-                    backRight.getCurrentPosition(),
-                    backLeft.getCurrentPosition());
-            telemetry.addData("FrontR Pow", frontRight.getPower());
-            telemetry.addData("BackR Pow", backRight.getPower());
-            telemetry.addData("FrontL Pow", frontLeft.getPower());
-            telemetry.addData("BackL Pow", backLeft.getPower());
-            telemetry.update();
-        }
-
-        // Stop all motion;
-        setWheelPower(0);
-        setWheelEncoderMode(RUN_USING_ENCODER);
-
+    public void releaseBlock(){
+        leftHand.setPosition(0.75);
+        rightHand.setPosition(0.44);
     }
 
     public void pivotRight(int inches){
         setWheelEncoderMode(STOP_AND_RESET_ENCODER);
 
-        int targetPosition = frontLeft.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+        int targetPosition = frontLeft.getCurrentPosition() + (int)(inches * TICKS_PER_INCH_REV);
 
+        //Run the encoder and set power for robot to move
         frontLeft.setTargetPosition(-targetPosition);
         frontRight.setTargetPosition(targetPosition);
         backLeft.setTargetPosition(-targetPosition);
         backRight.setTargetPosition(targetPosition);
-
-        telemetry.addData("Front Left Target Position: ", -targetPosition);
-        telemetry.addData("Front Right Target Position: ", targetPosition);
-        telemetry.addData("Back Left Target Position: ", -targetPosition);
-        telemetry.addData("Back Right Target Position: ", targetPosition);
-        telemetry.update();
 
         setWheelEncoderMode(RUN_TO_POSITION);
         setWheelPower(0.5);
@@ -363,5 +238,53 @@ public class RightBlueAuto extends LinearOpMode {
         frontRight.setPower(p);
         backLeft.setPower(p);
         backRight.setPower(p);
+    }
+
+    public void setArmEncoderMode(RunMode r){
+        rightArm.setMode(r);
+        leftArm.setMode(r);
+    }
+
+    public void setArmPower(double p){
+        rightArm.setPower(p);
+        leftArm.setPower(p);
+    }
+
+
+
+    //Stuff to do before initialization
+    public void configureMotors(){
+        frontRight = hardwareMap.dcMotor.get("motor1");
+        frontLeft = hardwareMap.dcMotor.get("motor2");
+        backRight = hardwareMap.dcMotor.get("motor3");
+        backLeft = hardwareMap.dcMotor.get("motor4");
+        rightArm = hardwareMap.dcMotor.get("motor5");
+        leftArm = hardwareMap.dcMotor.get("motor6");
+        rightHand = hardwareMap.servo.get("rightHand");
+        leftHand = hardwareMap.servo.get("leftHand");
+        cMotor = hardwareMap.dcMotor.get("carrouselMotor");
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "frontRightColor");
+    }
+
+    public void setMotorDirection(){
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection((DcMotor.Direction.FORWARD));
+        backRight.setDirection(DcMotor.Direction.FORWARD);
+        rightArm.setDirection(DcMotor.Direction.FORWARD);
+        leftArm.setDirection(DcMotor.Direction.FORWARD);
+        rightHand.setDirection(Servo.Direction.FORWARD);
+        leftHand.setDirection(Servo.Direction.REVERSE);
+        cMotor.setDirection(DcMotor.Direction.FORWARD);
+    }
+
+    public void setZeroPowerBehavior(){
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        cMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 }
