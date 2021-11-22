@@ -5,6 +5,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -15,6 +16,11 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
 @Autonomous(name = "LeftBlueAuto", group = "Blue")
@@ -34,6 +40,7 @@ public class LeftBlueAuto extends LinearOpMode {
 
     private DcMotor cMotor;
     private NormalizedColorSensor colorSensor;
+    private BNO055IMU imu;
 
     static final double TICKS_PER_MOTOR_REV = 537.7;
     static final double WHEEL_DIAMETER_INCHES = 3.93701;
@@ -46,7 +53,7 @@ public class LeftBlueAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
 
         //Defines motors and direction
-        configureMotors();
+        configureHardware();
         setMotorDirection();
         setZeroPowerBehavior();
 
@@ -63,6 +70,11 @@ public class LeftBlueAuto extends LinearOpMode {
         cMotor.setPower(0);
         leftHand.setPosition(0.75);
         rightHand.setPosition(0.44);
+
+        //set up imu
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imu.initialize(parameters);
 
         //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
@@ -113,6 +125,12 @@ public class LeftBlueAuto extends LinearOpMode {
              */
 
             rotateArm(30);
+
+            while(opModeIsActive() && runtime.seconds() < 30){
+                float a = getAngle();
+                telemetry.addData("Heading: ", a);
+                telemetry.update();
+            }
             counter++;
         }
     }
@@ -226,6 +244,11 @@ public class LeftBlueAuto extends LinearOpMode {
 
     }
 
+    public float getAngle(){
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return angles.firstAngle;
+    }
+
     public void setWheelEncoderMode(RunMode r){
         frontLeft.setMode(r);
         frontRight.setMode(r);
@@ -253,7 +276,7 @@ public class LeftBlueAuto extends LinearOpMode {
 
 
     //Stuff to do before initialization
-    public void configureMotors(){
+    public void configureHardware(){
         frontRight = hardwareMap.dcMotor.get("motor1");
         frontLeft = hardwareMap.dcMotor.get("motor2");
         backRight = hardwareMap.dcMotor.get("motor3");
@@ -264,6 +287,7 @@ public class LeftBlueAuto extends LinearOpMode {
         leftHand = hardwareMap.servo.get("leftHand");
         cMotor = hardwareMap.dcMotor.get("carrouselMotor");
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "frontRightColor");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
     }
 
     public void setMotorDirection(){
