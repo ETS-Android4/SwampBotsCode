@@ -8,12 +8,9 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -25,8 +22,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name = "LeftBlueAuto", group = "Blue")
 public class LeftBlueAuto extends LinearOpMode {
-    private ElapsedTime runtime = new ElapsedTime();
+
     Robot robot = new Robot();
+    private ElapsedTime runtime = new ElapsedTime();
 
     public NormalizedColorSensor colorSensor;
     private BNO055IMU imu;
@@ -38,11 +36,13 @@ public class LeftBlueAuto extends LinearOpMode {
     static final double TICKS_PER_MOTOR_HEX = 288.0;
     static final double TICKS_PER_DEGREE_HEX = TICKS_PER_MOTOR_HEX / 360.0;
 
+
     @Override
     public void runOpMode() throws InterruptedException{
 
         //Defines motors and direction
         robot.init(hardwareMap);
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
 
         //Encoders
         setWheelEncoderMode(STOP_AND_RESET_ENCODER);
@@ -148,25 +148,25 @@ public class LeftBlueAuto extends LinearOpMode {
         setWheelEncoderMode(RUN_USING_ENCODER);
     }
 
-    /*public void rotateArm(int degrees){
+    public void rotateArm(int degrees){
         setArmEncoderMode(STOP_AND_RESET_ENCODER);
 
-        int targetAngle = leftArm.getCurrentPosition() + (int)(degrees * TICKS_PER_DEGREE_HEX);
-        leftArm.setTargetPosition(targetAngle);
-        rightArm.setTargetPosition(targetAngle);
+        int targetAngle = robot.leftArm.getCurrentPosition() + (int)(degrees * TICKS_PER_DEGREE_HEX);
+        robot.leftArm.setTargetPosition(targetAngle);
+        robot.rightArm.setTargetPosition(targetAngle);
 
         setArmEncoderMode(RUN_TO_POSITION);
         setArmPower(0.3);
 
         while (opModeIsActive() &&
                 (runtime.seconds() < 30) &&
-                (leftArm.isBusy() && rightArm.isBusy())) {
+                (robot.leftArm.isBusy() && robot.rightArm.isBusy())) {
 
             // Display it for the driver.
             telemetry.addData("Path1",  "Rotating to %7d ", targetAngle);
             telemetry.addData("Path2", "Current Position %7d:%7d",
-                    leftArm.getCurrentPosition(),
-                    rightArm.getCurrentPosition());
+                    robot.leftArm.getCurrentPosition(),
+                    robot.rightArm.getCurrentPosition());
             telemetry.update();
         }
 
@@ -175,55 +175,15 @@ public class LeftBlueAuto extends LinearOpMode {
     }
 
     public void grabBlock(){
-        leftHand.setPosition(0.85);
-        rightHand.setPosition(0.54);
+        robot.leftHand.setPosition(0.85);
+        robot.rightHand.setPosition(0.54);
     }
 
     public void releaseBlock(){
-        leftHand.setPosition(0.75);
-        rightHand.setPosition(0.44);
+        robot.leftHand.setPosition(0.75);
+        robot.rightHand.setPosition(0.44);
     }
 
-    public void pivotRight(int inches){
-        setWheelEncoderMode(STOP_AND_RESET_ENCODER);
-
-        int targetPosition = frontLeft.getCurrentPosition() + (int)(inches * TICKS_PER_INCH_REV);
-
-        //Run the encoder and set power for robot to move
-        frontLeft.setTargetPosition(-targetPosition);
-        frontRight.setTargetPosition(targetPosition);
-        backLeft.setTargetPosition(-targetPosition);
-        backRight.setTargetPosition(targetPosition);
-
-        setWheelEncoderMode(RUN_TO_POSITION);
-        setWheelPower(0.5);
-
-        while (opModeIsActive() &&
-                (runtime.seconds() < 30) &&
-                (frontLeft.isBusy() && frontRight.isBusy() && backRight.isBusy() && backLeft.isBusy())) {
-
-            // Display it for the driver.
-            telemetry.addData("Path1",  "Running to %7d : %7d", targetPosition, -targetPosition);
-            telemetry.addData("Path2", "Current Position %7d:%7d:%7d:%7d",
-                    frontRight.getCurrentPosition(),
-                    frontLeft.getCurrentPosition(),
-                    backRight.getCurrentPosition(),
-                    backLeft.getCurrentPosition());
-            telemetry.addData("RightF Pow", frontRight.getPower());
-            telemetry.addData("RightB Pow", backRight.getPower());
-            telemetry.addData("RightL Pow", frontLeft.getPower());
-            telemetry.addData("BackL Pow", backLeft.getPower());
-
-            telemetry.update();
-        }
-
-        // Stop all motion;
-        setWheelPower(0);
-
-        // Turn off RUN_TO_POSITION
-        setWheelEncoderMode(RUN_USING_ENCODER);
-
-    }*/
 
     public float getAngle(){
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
