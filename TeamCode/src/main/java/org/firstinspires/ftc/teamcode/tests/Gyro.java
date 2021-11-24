@@ -26,13 +26,8 @@ public class Gyro extends LinearOpMode {
 
         waitForStart();
 
-        turn(90);
-        sleep(3000);
-        turnTo(-90);
+
     }
-
-
-
 
 
 
@@ -85,4 +80,21 @@ public class Gyro extends LinearOpMode {
         turn(error);
     }
 
+    public double getAbsoluteAngle(){
+        return robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+    }
+
+
+    public void turnToPID(double targetAngle){
+        TurnPIDController pid = new TurnPIDController(targetAngle, 0.01, 0, 0.003);
+        while(opModeIsActive() && Math.abs(targetAngle - getAbsoluteAngle()) > 1){
+            double motorPower = pid.update(getAbsoluteAngle());
+            robot.setWheelPower(motorPower, -motorPower, motorPower, -motorPower);
+        }
+        robot.setAllWheelPower(0);
+    }
+
+    public void turnPID(double degrees){
+        turnToPID(degrees + getAbsoluteAngle());
+    }
 }
