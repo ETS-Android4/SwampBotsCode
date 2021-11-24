@@ -41,7 +41,7 @@ public class RightBlueAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
 
         //Defines motors and direction
-        robot.init(hardwareMap);
+        robot.init(hardwareMap, "auto");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
         //Encoders
