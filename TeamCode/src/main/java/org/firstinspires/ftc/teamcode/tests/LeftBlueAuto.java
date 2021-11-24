@@ -53,9 +53,8 @@ public class LeftBlueAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
 
         //Defines motors and direction
-        configureHardware();
-        setMotorDirection();
-        setZeroPowerBehavior();
+        Robot robot = new Robot();
+        robot.init(hardwareMap);
 
         //Encoders
         setWheelEncoderMode(STOP_AND_RESET_ENCODER);
