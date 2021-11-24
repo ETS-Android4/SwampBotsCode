@@ -27,7 +27,6 @@ public class LeftBlueAuto extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     public NormalizedColorSensor colorSensor;
-    private BNO055IMU imu;
 
     static final double TICKS_PER_MOTOR_REV = 537.7;
     static final double WHEEL_DIAMETER_INCHES = 3.93701;
@@ -42,7 +41,6 @@ public class LeftBlueAuto extends LinearOpMode {
 
         //Defines motors and direction
         robot.init(hardwareMap, "auto");
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
 
         //Encoders
         setWheelEncoderMode(STOP_AND_RESET_ENCODER);
@@ -52,16 +50,12 @@ public class LeftBlueAuto extends LinearOpMode {
 
 
         //Set Motors to Use No Power
-        setWheelPower(0);
+        robot.setAllWheelPower(0);
         setArmPower(0);
         robot.carousel.setPower(0);
         robot.leftHand.setPosition(0.75);
         robot.rightHand.setPosition(0.44);
 
-        //set up imu
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        imu.initialize(parameters);
 
         //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
@@ -109,6 +103,7 @@ public class LeftBlueAuto extends LinearOpMode {
                 RIGHT -- -1, 1, 1, -1
                 LEFT -- 1, -1, -1, 1
 
+                24 INCHES = 90 DEGREE TURN
              */
 
             linearMove(10, 1, 1, 1, 1);
@@ -127,7 +122,7 @@ public class LeftBlueAuto extends LinearOpMode {
         robot.backRight.setTargetPosition(brSign * targetPosition);
 
         setWheelEncoderMode(RUN_TO_POSITION);
-        setWheelPower(0.5);
+        robot.setAllWheelPower(0.5);
 
         while (opModeIsActive() &&
                 (runtime.seconds() < 30) &&
@@ -144,7 +139,7 @@ public class LeftBlueAuto extends LinearOpMode {
             telemetry.update();
         }
 
-        setWheelPower(0);
+        robot.setAllWheelPower(0);
         setWheelEncoderMode(RUN_USING_ENCODER);
     }
 
@@ -185,23 +180,11 @@ public class LeftBlueAuto extends LinearOpMode {
     }
 
 
-    public float getAngle(){
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return angles.firstAngle;
-    }
-
     public void setWheelEncoderMode(RunMode r){
         robot.frontLeft.setMode(r);
         robot.frontRight.setMode(r);
         robot.backLeft.setMode(r);
         robot.backRight.setMode(r);
-    }
-
-    public void setWheelPower(double p){
-        robot.frontLeft.setPower(p);
-        robot.frontRight.setPower(p);
-        robot.backLeft.setPower(p);
-        robot.backRight.setPower(p);
     }
 
     public void setArmEncoderMode(RunMode r){

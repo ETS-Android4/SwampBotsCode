@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.tests;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -23,6 +24,7 @@ public class Robot {
     public Servo leftHand = null;
     public Servo rightHand = null;
 
+    public BNO055IMU imu = null;
 
     //local OpMode members
     HardwareMap hw = null;
@@ -45,6 +47,7 @@ public class Robot {
         rightHand = hw.servo.get("rightHand");
         leftHand = hw.servo.get("leftHand");
         carousel = hw.dcMotor.get("carrouselMotor");
+        imu = hw.get(BNO055IMU.class, "imu");
 
 
         //Set motor direction
@@ -59,10 +62,7 @@ public class Robot {
         carousel.setDirection(DcMotor.Direction.FORWARD);
 
         //Set motor power to zero
-        frontRight.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        backLeft.setPower(0);
+       setAllWheelPower(0);
         rightArm.setPower(0);
         leftArm.setPower(0);
         carousel.setPower(0);
@@ -84,6 +84,31 @@ public class Robot {
         leftArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
+        //Initialize imu and parameters
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
     }
+
+    public void setWheelPower(double p1, double p2, double p3, double p4){
+        frontLeft.setPower(p1);
+        frontRight.setPower(p2);
+        backLeft.setPower(p3);
+        backRight.setPower(p4);
+    }
+
+    public void setAllWheelPower(double p){
+        frontRight.setPower(p);
+        frontLeft.setPower(p);
+        backRight.setPower(p);
+        backLeft.setPower(p);
+    }
+
+
+
+
 }
