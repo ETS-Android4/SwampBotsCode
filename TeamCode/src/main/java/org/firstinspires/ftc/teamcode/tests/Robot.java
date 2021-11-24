@@ -23,7 +23,6 @@ public class Robot {
     public Servo leftHand = null;
     public Servo rightHand = null;
 
-    public BNO055IMU imu = null;
 
     //local OpMode members
     HardwareMap hw = null;
@@ -46,7 +45,7 @@ public class Robot {
         rightHand = hw.servo.get("rightHand");
         leftHand = hw.servo.get("leftHand");
         carousel = hw.dcMotor.get("carrouselMotor");
-        imu = hw.get(BNO055IMU.class, "imu");
+
 
         //Set motor direction
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
