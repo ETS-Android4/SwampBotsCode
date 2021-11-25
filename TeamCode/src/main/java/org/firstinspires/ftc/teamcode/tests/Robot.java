@@ -47,7 +47,7 @@ public class Robot {
         rightHand = hw.servo.get("rightHand");
         leftHand = hw.servo.get("leftHand");
         carousel = hw.dcMotor.get("carrouselMotor");
-        imu = hw.get(BNO055IMU.class, "imu");
+        imu = hw.get(BNO055IMU.class, "imu1");
 
 
         //Set motor direction
@@ -62,7 +62,7 @@ public class Robot {
         carousel.setDirection(DcMotor.Direction.FORWARD);
 
         //Set motor power to zero
-       setAllWheelPower(0);
+        setAllWheelPower(0);
         rightArm.setPower(0);
         leftArm.setPower(0);
         carousel.setPower(0);
@@ -107,8 +107,4 @@ public class Robot {
         backRight.setPower(p);
         backLeft.setPower(p);
     }
-
-
-
-
 }
