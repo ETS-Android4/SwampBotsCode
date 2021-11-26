@@ -106,7 +106,7 @@ public class LeftBlueAuto extends LinearOpMode {
                 24 INCHES = 90 DEGREE TURN
              */
 
-            linearMove(10, 1, 1, 1, 1);
+            linearMove(15, 1, -1, -1, 1);
             counter++;
         }
     }
@@ -116,13 +116,13 @@ public class LeftBlueAuto extends LinearOpMode {
 
         int targetPosition = robot.frontLeft.getCurrentPosition() + (int)(inches * TICKS_PER_INCH_REV);
 
-        robot.frontLeft.setTargetPosition(flSign * targetPosition);
+        robot.frontLeft.setTargetPosition((int)1.6 * flSign * targetPosition);
         robot.frontRight.setTargetPosition(frSign * targetPosition);
-        robot.backLeft.setTargetPosition(blSign * targetPosition);
+        robot.backLeft.setTargetPosition((int)1.6 * blSign * targetPosition);
         robot.backRight.setTargetPosition(brSign * targetPosition);
 
         setWheelEncoderMode(RUN_TO_POSITION);
-        robot.setAllWheelPower(0.5);
+        robot.setWheelPower(0.8, 0.5, 0.8, 0.5);
 
         while (opModeIsActive() &&
                 (runtime.seconds() < 30) &&

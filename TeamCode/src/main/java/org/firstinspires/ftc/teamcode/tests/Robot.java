@@ -47,7 +47,7 @@ public class Robot {
         rightHand = hw.servo.get("rightHand");
         leftHand = hw.servo.get("leftHand");
         carousel = hw.dcMotor.get("carrouselMotor");
-        imu = hw.get(BNO055IMU.class, "imu1");
+        imu = hw.get(BNO055IMU.class, "imu");
 
 
         //Set motor direction
@@ -88,10 +88,8 @@ public class Robot {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+
     }
 
     public void setWheelPower(double p1, double p2, double p3, double p4){
