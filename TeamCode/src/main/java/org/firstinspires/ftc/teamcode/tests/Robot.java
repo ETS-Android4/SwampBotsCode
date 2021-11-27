@@ -24,8 +24,6 @@ public class Robot {
     public Servo leftHand = null;
     public Servo rightHand = null;
 
-    public BNO055IMU imu = null;
-
     //local OpMode members
     HardwareMap hw = null;
     private ElapsedTime runtime = new ElapsedTime();
@@ -47,7 +45,6 @@ public class Robot {
         rightHand = hw.servo.get("rightHand");
         leftHand = hw.servo.get("leftHand");
         carousel = hw.dcMotor.get("carrouselMotor");
-        imu = hw.get(BNO055IMU.class, "imu");
 
 
         //Set motor direction
@@ -84,10 +81,7 @@ public class Robot {
         leftArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //Initialize imu and parameters
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+
 
 
     }
