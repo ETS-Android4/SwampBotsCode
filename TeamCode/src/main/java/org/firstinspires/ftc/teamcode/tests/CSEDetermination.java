@@ -78,14 +78,15 @@ public class CSEDetermination extends LinearOpMode {
 
 
         Mat region1_G, region2_G, region3_G;
-        Mat RBG = new Mat();
+        Mat RGB = new Mat();
         Mat G = new Mat();
         int avg1, avg2, avg3;
 
         private volatile CSEPosition position = CSEPosition.LEFT;
 
         void inputToG(Mat input){
-            Core.extractChannel(input, G, 1);
+            Imgproc.cvtColor(input, RGB, Imgproc.COLOR_BGR2RGB);
+            Core.extractChannel(RGB, G, 1);
         }
 
         @Override
