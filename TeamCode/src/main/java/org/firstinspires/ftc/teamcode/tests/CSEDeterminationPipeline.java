@@ -19,12 +19,12 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
 
-    static final Point REGION1_TOP_LEFT_ANCHOR_POINT = new Point(436, 294);
-    static final Point REGION2_TOP_LEFT_ANCHOR_POINT = new Point(724, 294);
-    static final Point REGION3_TOP_LEFT_ANCHOR_POINT = new Point(1012, 294);
+    static final Point REGION1_TOP_LEFT_ANCHOR_POINT = new Point(500, 294);
+    static final Point REGION2_TOP_LEFT_ANCHOR_POINT = new Point(800, 294);
+    static final Point REGION3_TOP_LEFT_ANCHOR_POINT = new Point(1100, 294);
 
-    static final int REGION_WIDTH = 50;
-    static final int REGION_HEIGHT = 50;
+    static final int REGION_WIDTH = 150;
+    static final int REGION_HEIGHT = 100;
 
 
 
@@ -45,14 +45,14 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
 
     private volatile CSEPosition position = CSEPosition.LEFT;
 
-    void inputToG(Mat input){
+    void inputToCb(Mat input){
         Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_BGR2YCrCb);
         Core.extractChannel(YCrCb, Cb, 2);
     }
 
     @Override
     public void init(Mat firstFrame){
-        inputToG(firstFrame);
+        inputToCb(firstFrame);
 
         region1_Cb = Cb.submat(new Rect(region1_PointA, region1_PointB));
         region2_Cb = Cb.submat(new Rect(region2_PointA, region2_PointB));
@@ -60,12 +60,13 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     }
 
     public Mat processFrame(Mat input){
-        inputToG(input);
+        inputToCb(input);
 
         avg1 = (int) Core.mean(region1_Cb).val[0];
         avg2 = (int) Core.mean(region2_Cb).val[0];
         avg3 = (int) Core.mean(region3_Cb).val[0];
 
+        System.out.println(avg1 +", "+avg2+ ", "+avg3);
 
         Imgproc.rectangle(
                 input, // Buffer to draw on

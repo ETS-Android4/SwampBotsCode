@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.tests;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Hardware;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
@@ -15,16 +16,30 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-public class CSEDetermination extends LinearOpMode {
-    OpenCvWebcam camera;
-    CSEDeterminationPipeline pipeline;
 
-    public void runOpMode(){
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+public class CSEDetermination {
+    OpenCvWebcam camera = null;
+    CSEDeterminationPipeline pipeline = null;
+
+
+    public CSEDetermination(){
+
+    }
+
+    public void init(HardwareMap hw){
+        //Camera name and id stuff that needs to be set up in order to initialize the camera object
+        int cameraMonitorViewId = hw.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hw.appContext.getPackageName());
+
+        WebcamName webcamName = hw.get(WebcamName.class, "Webcam 1");
+
+
+        //Initialize the camera object with parameters above. Also initilize pipeline to a new CSEDeterminationPipeline --> different class
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
         pipeline = new CSEDeterminationPipeline();
+    }
+
+    public void updateCamera(){
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -45,6 +60,6 @@ public class CSEDetermination extends LinearOpMode {
                  */
             }
         });
-        waitForStart();
+
     }
 }

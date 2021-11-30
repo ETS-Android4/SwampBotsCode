@@ -24,6 +24,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class LeftBlueAuto extends LinearOpMode {
 
     Robot robot = new Robot();
+    CSEDetermination cseDetermination = new CSEDetermination();
+
     private ElapsedTime runtime = new ElapsedTime();
 
     public NormalizedColorSensor colorSensor;
@@ -41,6 +43,7 @@ public class LeftBlueAuto extends LinearOpMode {
 
         //Defines motors and direction
         robot.init(hardwareMap, "auto");
+        cseDetermination.init(hardwareMap);
 
         //Encoders
         setWheelEncoderMode(STOP_AND_RESET_ENCODER);
@@ -66,6 +69,13 @@ public class LeftBlueAuto extends LinearOpMode {
 
         //Counters for movement methods
         int counter = 0;
+        boolean detectingCSE = true;
+        while(detectingCSE){
+            cseDetermination.updateCamera();
+            if(isStarted()){
+                detectingCSE = false;
+            }
+        }
         waitForStart();
 
         while (opModeIsActive() && counter == 0){
@@ -106,7 +116,7 @@ public class LeftBlueAuto extends LinearOpMode {
                 24 INCHES = 90 DEGREE TURN
              */
 
-            linearMove(15, 1, -1, -1, 1);
+
             counter++;
         }
     }
