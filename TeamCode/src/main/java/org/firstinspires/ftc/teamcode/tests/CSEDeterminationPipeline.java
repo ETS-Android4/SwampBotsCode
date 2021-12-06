@@ -81,6 +81,30 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
                 BLUE,
                 2);
 
+
+        //these are temporary, delete once specific values for regions have been tested for
+        Imgproc.line(
+                input,
+                new Point(REGION1_TOP_LEFT_ANCHOR_POINT.x, REGION1_TOP_LEFT_ANCHOR_POINT.y - 30),
+                new Point(REGION1_TOP_LEFT_ANCHOR_POINT.x + 15, REGION1_TOP_LEFT_ANCHOR_POINT.y - 30),
+                BLUE,
+                2);
+
+        Imgproc.line(
+                input,
+                new Point(REGION2_TOP_LEFT_ANCHOR_POINT.x, REGION2_TOP_LEFT_ANCHOR_POINT.y - 30),
+                new Point(REGION2_TOP_LEFT_ANCHOR_POINT.x + 15, REGION2_TOP_LEFT_ANCHOR_POINT.y - 30),
+                BLUE,
+                2);
+
+        Imgproc.line(
+                input,
+                new Point(REGION3_TOP_LEFT_ANCHOR_POINT.x, REGION3_TOP_LEFT_ANCHOR_POINT.y - 30),
+                new Point(REGION3_TOP_LEFT_ANCHOR_POINT.x + 15, REGION3_TOP_LEFT_ANCHOR_POINT.y - 30),
+                BLUE,
+                2);
+
+
         int maxOneTwo = Math.max(avg1, avg2);
         int max = Math.max(maxOneTwo, avg3);
 
