@@ -18,6 +18,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 
 @Autonomous(name = "LeftBlueAuto", group = "Blue")
@@ -29,6 +31,8 @@ public class LeftBlueAuto extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     public NormalizedColorSensor colorSensor;
+
+    private int CSEPosition;
 
     static final double TICKS_PER_MOTOR_REV = 537.7;
     static final double WHEEL_DIAMETER_INCHES = 3.93701;
@@ -66,18 +70,9 @@ public class LeftBlueAuto extends LinearOpMode {
         telemetry.update();
 
         //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-        //Counters for movement methods
-        int counter = 0;
-        boolean detectingCSE = true;
-        while(detectingCSE){
-            cseDetermination.updateCamera();
-            if(isStarted()){
-                detectingCSE = false;
-            }
-        }
         waitForStart();
 
+        int counter = 0;
         while (opModeIsActive() && counter == 0){
 
 
@@ -113,9 +108,20 @@ public class LeftBlueAuto extends LinearOpMode {
                 RIGHT -- -1, 1, 1, -1
                 LEFT -- 1, -1, -1, 1
 
-                24 INCHES = 90 DEGREE TURN
+                24 INCHES = 90 DEGREE TURN WHEEl
              */
+            grabBlock();
+            sleep(100);
+            rotateArm(125);
 
+            //possibly sleep here if it's detecting incorrect position at first
+            CSEPosition = cseDetermination.csePipeline.getAnalysis();
+            telemetry.addData("Position", CSEPosition);
+            telemetry.update();
+
+            while(runtime.seconds() < 30){
+                wait();
+            }
 
             counter++;
         }
@@ -156,12 +162,12 @@ public class LeftBlueAuto extends LinearOpMode {
     public void rotateArm(int degrees){
         setArmEncoderMode(STOP_AND_RESET_ENCODER);
 
-        int targetAngle = robot.leftArm.getCurrentPosition() + (int)(degrees * TICKS_PER_DEGREE_HEX);
+        int targetAngle = robot.leftArm.getCurrentPosition() + (int)(-(degrees - 12) * TICKS_PER_DEGREE_HEX);
         robot.leftArm.setTargetPosition(targetAngle);
         robot.rightArm.setTargetPosition(targetAngle);
 
         setArmEncoderMode(RUN_TO_POSITION);
-        setArmPower(0.3);
+        setArmPower(0.5);
 
         while (opModeIsActive() &&
                 (runtime.seconds() < 30) &&
