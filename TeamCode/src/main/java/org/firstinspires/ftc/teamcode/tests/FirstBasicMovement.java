@@ -52,8 +52,8 @@ public class FirstBasicMovement extends LinearOpMode {
             robot.backLeft.setPower(pivot + vertical - horizontal);
 
             armVertical = gamepad2.left_stick_y;
-            robot.leftArm.setPower(armVertical * 0.6);
-            robot.rightArm.setPower(armVertical * 0.6);
+            robot.leftArm.setPower(armVertical * 0.3);
+            robot.rightArm.setPower(armVertical * 0.3);
             
             if(gamepad1.right_trigger > 0){
                 robot.carousel.setPower(carousselMotorPowerF);
@@ -67,12 +67,12 @@ public class FirstBasicMovement extends LinearOpMode {
             telemetry.addData("Right Hand Position: ", robot.rightHand.getPosition());
             telemetry.addData("Left Hand Position: ", robot.leftHand.getPosition());
 
-            if (gamepad2.left_bumper){ //closed position
+            if (gamepad2.right_bumper){ //closed position
                 robot.leftHand.setPosition(0.85);
                 robot.rightHand.setPosition(0.54);
             }
 
-            if (gamepad2.right_bumper){ //opened position
+            if (gamepad2.left_bumper){ //opened position
                 robot.leftHand.setPosition(0.75);
                 robot.rightHand.setPosition(0.44);
             }

@@ -13,12 +13,12 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
 
-    static final Point REGION1_TOP_LEFT_ANCHOR_POINT = new Point(230, 240);
-    static final Point REGION2_TOP_LEFT_ANCHOR_POINT = new Point(600, 290);
-    static final Point REGION3_TOP_LEFT_ANCHOR_POINT = new Point(900, 310);
+    static final Point REGION1_TOP_LEFT_ANCHOR_POINT = new Point(65, 380);
+    static final Point REGION2_TOP_LEFT_ANCHOR_POINT = new Point(620, 410);
+    static final Point REGION3_TOP_LEFT_ANCHOR_POINT = new Point(1075, 440);
 
-    static final int REGION_WIDTH = 150;
-    static final int REGION_HEIGHT = 100;
+    static final int REGION_WIDTH = 200;
+    static final int REGION_HEIGHT = 200;
 
 
 
@@ -37,7 +37,7 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     Mat Cb = new Mat();
     int avg1, avg2, avg3;
 
-    int position;
+    int[] position = new int[3];
 
     void inputToCb(Mat input){
         Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_BGR2YCrCb);
@@ -108,9 +108,9 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
         int maxOneTwo = Math.max(avg1, avg2);
         int max = Math.max(maxOneTwo, avg3);
 
+
         if(max == avg1)
         {
-            position = 0;
 
             Imgproc.rectangle(
                     input,
@@ -121,7 +121,6 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
         }
         else if(max == avg2)
         {
-            position = 1;
 
             Imgproc.rectangle(
                     input,
@@ -132,7 +131,6 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
         }
         else if(max == avg3)
         {
-            position = 2;
 
             Imgproc.rectangle(
                     input,
@@ -145,7 +143,7 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
         return input;
     }
 
-    public int getAnalysis(){
+    public int[] getAnalysis(){
         return position;
     }
 

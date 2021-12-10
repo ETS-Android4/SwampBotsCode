@@ -63,6 +63,25 @@ public class LeftBlueAuto extends LinearOpMode {
         robot.leftHand.setPosition(0.75);
         robot.rightHand.setPosition(0.44);
 
+        cseDetermination.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                // Usually this is where you'll want to start streaming from the camera (see section 4)
+                cseDetermination.camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
+                cseDetermination.camera.setPipeline(cseDetermination.csePipeline);
+
+                cseDetermination.camera.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+            }
+            @Override
+            public void onError(int errorCode)
+            {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+            }
+        });
 
         //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
@@ -107,20 +126,90 @@ public class LeftBlueAuto extends LinearOpMode {
                 BACKWARD -- All -1's
                 RIGHT -- -1, 1, 1, -1
                 LEFT -- 1, -1, -1, 1
+                CCW TURN -- -1, 1, -1, 1
+                CW TURN -- 1, -1, 1, -1
 
                 24 INCHES = 90 DEGREE TURN WHEEl
              */
             grabBlock();
             sleep(100);
-            rotateArm(125);
+            linearMove(5, -1, -1, -1, -1);
+            sleep(100);
+            rotateArm(110);
+            sleep(100);
+            linearMove(4,1,1,1,1);
 
-            //possibly sleep here if it's detecting incorrect position at first
-            CSEPosition = cseDetermination.csePipeline.getAnalysis();
-            telemetry.addData("Position", CSEPosition);
+            cseDetermination.camera.setPipeline(cseDetermination.csePipeline);
+            sleep(3000);
+            int position = cseDetermination.csePipeline.getAnalysis();
+
+            if (position == 0){
+
+                telemetry.addData("Position:", position);
+                linearMove(3, -1, -1, -1, -1);
+                sleep(100);
+                linearMove(4,1,-1,-1,1);
+                sleep(100);
+                linearMove(6, 1, -1, 1, -1);
+                sleep(100);
+                linearMove(24,-1,-1,-1,-1);
+                sleep(100);
+                rotateArm(50);
+                sleep(300);
+                releaseBlock();
+                sleep(100);
+
+            } else if (position == 1){
+
+                telemetry.addData("Position:", position);
+                linearMove(3, -1, -1, -1, -1);
+                sleep(100);
+                linearMove(6, 1, -1, 1, -1);
+                sleep(100);
+                linearMove(20,-1,1,-1,-1);
+                sleep(100);
+                rotateArm(65);
+                sleep(1000);
+                linearMove(4, -1,-1, -1, -1);
+                sleep(300);
+                releaseBlock();
+                sleep(100);
+            } else if (position == 2){
+                telemetry.addData("Position:", position);
+                linearMove(3, -1, -1, -1, -1);
+                sleep(100);
+                linearMove(6, 1, -1, 1, -1);
+                sleep(100);
+                linearMove(18,-1,1,-1,-1);
+                sleep(100);
+                rotateArm(80);
+                sleep(300);
+                linearMove(6, -1,-1, -1, -1);
+                sleep(1000);
+                releaseBlock();
+                sleep(100);
+
+            } else {
+                telemetry.addData("Position:", "Robot is fucking gay");
+            }
+
             telemetry.update();
 
-            while(runtime.seconds() < 30){
-                wait();
+            sleep(500);
+            linearMove(14,1,1,1,1);
+            sleep(100);
+            linearMove(15,1,-1,1,-1);
+            sleep(100);
+            linearMove(35,1,1,1,1);
+            sleep(100);
+
+            //possibly sleep here if it's detecting incorrect position at first
+            //CSEPosition = cseDetermination.csePipeline.getAnalysis();
+            //telemetry.addData("Position", CSEPosition);
+
+
+            while(runtime.seconds() < 29){
+
             }
 
             counter++;
@@ -132,27 +221,18 @@ public class LeftBlueAuto extends LinearOpMode {
 
         int targetPosition = robot.frontLeft.getCurrentPosition() + (int)(inches * TICKS_PER_INCH_REV);
 
-        robot.frontLeft.setTargetPosition((int)1.6 * flSign * targetPosition);
+        robot.frontLeft.setTargetPosition(flSign * targetPosition);
         robot.frontRight.setTargetPosition(frSign * targetPosition);
-        robot.backLeft.setTargetPosition((int)1.6 * blSign * targetPosition);
+        robot.backLeft.setTargetPosition(blSign * targetPosition);
         robot.backRight.setTargetPosition(brSign * targetPosition);
 
         setWheelEncoderMode(RUN_TO_POSITION);
-        robot.setWheelPower(0.8, 0.5, 0.8, 0.5);
+        robot.setAllWheelPower(0.5);
 
         while (opModeIsActive() &&
                 (runtime.seconds() < 30) &&
                 (robot.frontLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy() && robot.backLeft.isBusy())) {
 
-            // Display it for the driver.
-            telemetry.addData("Path1",  "Running to %7d ", targetPosition);
-            telemetry.addData("Path2", "Current Position %7d:%7d:%7d:%7d",
-                    robot.frontRight.getCurrentPosition(),
-                    robot.frontLeft.getCurrentPosition(),
-                    robot.backRight.getCurrentPosition(),
-                    robot.backLeft.getCurrentPosition());
-
-            telemetry.update();
         }
 
         robot.setAllWheelPower(0);
@@ -167,7 +247,7 @@ public class LeftBlueAuto extends LinearOpMode {
         robot.rightArm.setTargetPosition(targetAngle);
 
         setArmEncoderMode(RUN_TO_POSITION);
-        setArmPower(0.5);
+        setArmPower(0.3);
 
         while (opModeIsActive() &&
                 (runtime.seconds() < 30) &&
