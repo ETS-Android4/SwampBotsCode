@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tests;
+package org.firstinspires.ftc.teamcode.Camera;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -8,7 +8,9 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class CSEDeterminationPipelineB extends OpenCvPipeline {
+public class CSEDeterminationPipeline extends OpenCvPipeline {
+
+    String color;
 
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
@@ -19,8 +21,6 @@ public class CSEDeterminationPipelineB extends OpenCvPipeline {
 
     static final int REGION_WIDTH = 200;
     static final int REGION_HEIGHT = 200;
-
-
 
     Point region1_PointA = new Point(REGION1_TOP_LEFT_ANCHOR_POINT.x, REGION1_TOP_LEFT_ANCHOR_POINT.y);
     Point region1_PointB = new Point(REGION1_TOP_LEFT_ANCHOR_POINT.x + REGION_WIDTH, REGION1_TOP_LEFT_ANCHOR_POINT.y + REGION_HEIGHT);
@@ -38,6 +38,10 @@ public class CSEDeterminationPipelineB extends OpenCvPipeline {
     int avg1, avg2, avg3;
 
     int position;
+
+    public CSEDeterminationPipeline(String c){
+        color = c;
+    }
 
     void inputToCb(Mat input){
         Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_BGR2YCrCb);
@@ -81,11 +85,23 @@ public class CSEDeterminationPipelineB extends OpenCvPipeline {
                 BLUE,
                 2);
 
-        int maxOneTwo = Math.max(avg1, avg2);
-        int max = Math.max(maxOneTwo, avg3);
+        int max = 0, min = 0;
+
+        if(color.equals("blue")){
+
+            int maxOneTwo = Math.max(avg1, avg2);
+            max = Math.max(maxOneTwo, avg3);
+
+        } else {
+
+            int minOneTwo = Math.min(avg1, avg2);
+            min = Math.min(minOneTwo, avg3);
+
+        }
 
 
-        if(max == avg1)
+
+        if(min == avg1 || max == avg1)
         {
             position = 0;
 
@@ -96,7 +112,7 @@ public class CSEDeterminationPipelineB extends OpenCvPipeline {
                     GREEN,
                     -1);
         }
-        else if(max == avg2)
+        else if(min == avg2 || max == avg2)
         {
             position = 1;
 
@@ -107,7 +123,7 @@ public class CSEDeterminationPipelineB extends OpenCvPipeline {
                     GREEN,
                     -1);
         }
-        else if(max == avg3)
+        else if(min == avg3 || max == avg3)
         {
             position = 2;
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tests;
+package org.firstinspires.ftc.teamcode.Camera;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Hardware;
@@ -19,14 +19,9 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 public class CSEDetermination {
     public OpenCvWebcam camera = null;
-    public CSEDeterminationPipelineB csePipelineB = null;
-    public CSEDeterminationPipelineR csePipelineR = null;
+    public CSEDeterminationPipeline csePipeline = null;
+    String color;
 
-
-
-    public CSEDetermination(){
-
-    }
 
     public void init(HardwareMap hw, String color){
         //Camera name and id stuff that needs to be set up in order to initialize the camera object
@@ -38,22 +33,13 @@ public class CSEDetermination {
         //Initialize the camera object with parameters above. Also initialize pipeline to a new CSEDeterminationPipeline --> different class
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-        if(color.equals("blue")) {
-            csePipelineB = new CSEDeterminationPipelineB();
-        } else {
-            csePipelineR = new CSEDeterminationPipelineR();
-        }
-
+        csePipeline = new CSEDeterminationPipeline(color);
         camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
 
-        if(csePipelineB ==  null){
-            camera.setPipeline(csePipelineR);
-        } else if(csePipelineR == null){
-            camera.setPipeline(csePipelineB);
-        }
+       camera.setPipeline(csePipeline);
     }
 
-    public void updateCamera(OpenCvCamera camera, CSEDeterminationPipelineB pipeline){
+    public void updateCamera(OpenCvCamera camera, CSEDeterminationPipeline pipeline){
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {

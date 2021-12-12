@@ -1,4 +1,7 @@
-package org.firstinspires.ftc.teamcode.tests;
+package org.firstinspires.ftc.teamcode.HardwareFunctionality;
+
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -71,24 +74,21 @@ public class Robot {
         carousel.setPower(0);
 
         //Set zero power behavior on motors
-        if(mode.equals("auto")){
-            frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        } else {
-            frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
-
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        setWheelEncoderMode(STOP_AND_RESET_ENCODER);
+        setWheelEncoderMode(RUN_USING_ENCODER);
+        setArmEncoderMode(STOP_AND_RESET_ENCODER);
+        setArmEncoderMode(RUN_USING_ENCODER);
 
-
+        leftHand.setPosition(0.75);
+        rightHand.setPosition(0.44);
 
     }
 
@@ -104,5 +104,32 @@ public class Robot {
         frontLeft.setPower(p);
         backRight.setPower(p);
         backLeft.setPower(p);
+    }
+
+    public void setArmPower(double p){
+        rightArm.setPower(p);
+        leftArm.setPower(p);
+    }
+
+    public void setWheelEncoderMode(DcMotor.RunMode r){
+        frontLeft.setMode(r);
+        frontRight.setMode(r);
+        backLeft.setMode(r);
+        backRight.setMode(r);
+    }
+
+    public void setArmEncoderMode(DcMotor.RunMode r){
+        rightArm.setMode(r);
+        leftArm.setMode(r);
+    }
+
+    public void grabBlock(){
+        leftHand.setPosition(0.85);
+        rightHand.setPosition(0.54);
+    }
+
+    public void releaseBlock(){
+        leftHand.setPosition(0.75);
+        rightHand.setPosition(0.44);
     }
 }
