@@ -8,7 +8,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class CSEDeterminationPipeline extends OpenCvPipeline {
+public class CSEDeterminationPipelineB extends OpenCvPipeline {
 
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
@@ -37,7 +37,7 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     Mat Cb = new Mat();
     int avg1, avg2, avg3;
 
-    int[] position = new int[3];
+    int position;
 
     void inputToCb(Mat input){
         Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_BGR2YCrCb);
@@ -81,36 +81,13 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
                 BLUE,
                 2);
 
-
-        //these are temporary, delete once specific values for regions have been tested for
-        Imgproc.line(
-                input,
-                new Point(REGION1_TOP_LEFT_ANCHOR_POINT.x, REGION1_TOP_LEFT_ANCHOR_POINT.y - 30),
-                new Point(REGION1_TOP_LEFT_ANCHOR_POINT.x + 15, REGION1_TOP_LEFT_ANCHOR_POINT.y - 30),
-                BLUE,
-                2);
-
-        Imgproc.line(
-                input,
-                new Point(REGION2_TOP_LEFT_ANCHOR_POINT.x, REGION2_TOP_LEFT_ANCHOR_POINT.y - 30),
-                new Point(REGION2_TOP_LEFT_ANCHOR_POINT.x + 15, REGION2_TOP_LEFT_ANCHOR_POINT.y - 30),
-                BLUE,
-                2);
-
-        Imgproc.line(
-                input,
-                new Point(REGION3_TOP_LEFT_ANCHOR_POINT.x, REGION3_TOP_LEFT_ANCHOR_POINT.y - 30),
-                new Point(REGION3_TOP_LEFT_ANCHOR_POINT.x + 15, REGION3_TOP_LEFT_ANCHOR_POINT.y - 30),
-                BLUE,
-                2);
-
-
         int maxOneTwo = Math.max(avg1, avg2);
         int max = Math.max(maxOneTwo, avg3);
 
 
         if(max == avg1)
         {
+            position = 0;
 
             Imgproc.rectangle(
                     input,
@@ -121,6 +98,7 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
         }
         else if(max == avg2)
         {
+            position = 1;
 
             Imgproc.rectangle(
                     input,
@@ -131,6 +109,7 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
         }
         else if(max == avg3)
         {
+            position = 2;
 
             Imgproc.rectangle(
                     input,
@@ -143,7 +122,7 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
         return input;
     }
 
-    public int[] getAnalysis(){
+    public int getAnalysis(){
         return position;
     }
 

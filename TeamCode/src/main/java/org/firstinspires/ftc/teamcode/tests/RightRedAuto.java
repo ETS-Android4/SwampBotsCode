@@ -18,16 +18,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 
 @Autonomous(name = "RightRedAuto", group = "Red")
 public class RightRedAuto extends LinearOpMode {
 
     Robot robot = new Robot();
-    private ElapsedTime runtime = new ElapsedTime();
+    CSEDetermination cseDetermination = new CSEDetermination();
 
     public NormalizedColorSensor colorSensor;
-    private BNO055IMU imu;
+
+    private int CSEPosition;
 
     static final double TICKS_PER_MOTOR_REV = 537.7;
     static final double WHEEL_DIAMETER_INCHES = 3.93701;
@@ -42,7 +45,7 @@ public class RightRedAuto extends LinearOpMode {
 
         //Defines motors and direction
         robot.init(hardwareMap, "auto");
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        cseDetermination.init(hardwareMap, "red");
 
         //Encoders
         setWheelEncoderMode(STOP_AND_RESET_ENCODER);
@@ -52,16 +55,31 @@ public class RightRedAuto extends LinearOpMode {
 
 
         //Set Motors to Use No Power
-        setWheelPower(0);
+        robot.setAllWheelPower(0);
         setArmPower(0);
         robot.carousel.setPower(0);
         robot.leftHand.setPosition(0.75);
         robot.rightHand.setPosition(0.44);
 
-        //set up imu
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        imu.initialize(parameters);
+        cseDetermination.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                // Usually this is where you'll want to start streaming from the camera (see section 4)
+                cseDetermination.camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
+                cseDetermination.camera.setPipeline(cseDetermination.csePipelineR);
+
+                cseDetermination.camera.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+            }
+            @Override
+            public void onError(int errorCode)
+            {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+            }
+        });
 
         //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
@@ -69,11 +87,9 @@ public class RightRedAuto extends LinearOpMode {
         telemetry.update();
 
         //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-        //Counters for movement methods
-        int counter = 0;
         waitForStart();
 
+        int counter = 0;
         while (opModeIsActive() && counter == 0){
 
 
@@ -108,10 +124,63 @@ public class RightRedAuto extends LinearOpMode {
                 BACKWARD -- All -1's
                 RIGHT -- -1, 1, 1, -1
                 LEFT -- 1, -1, -1, 1
+                CCW TURN -- -1, 1, -1, 1
+                CW TURN -- 1, -1, 1, -1
 
+                24 INCHES = 90 DEGREE TURN WHEEl
              */
+            grabBlock();
+            sleep(100);
+            linearMove(5, -1, -1, -1, -1);
+            sleep(100);
+            rotateArm(110);
+            sleep(100);
+            linearMove(4,1,1,1,1);
 
-            linearMove(10, 1, 1, 1, 1);
+            cseDetermination.camera.setPipeline(cseDetermination.csePipelineR);
+            sleep(3000);
+            int position = cseDetermination.csePipelineR.getAnalysis();
+            telemetry.addData("Position", position);
+            telemetry.update();
+
+            linearMove(3, -1, -1, -1, -1);
+            sleep(100);
+            linearMove(3,-1,1,1,-1);
+            sleep(100);
+            linearMove(9, -1, 1, -1, 1);
+            sleep(100);
+
+            if (position == 0){
+                rotateArm(90);
+                sleep(100);
+                linearMove(21,-1,-1,-1,-1);
+                releaseBlock();
+
+
+            } else if (position == 1){
+                rotateArm(60);
+                sleep(300);
+                linearMove(22, -1, -1, -1, -1);
+                releaseBlock();
+
+            } else {
+                rotateArm(50);
+                sleep(100);
+                linearMove(24, -1, -1, -1, -1);
+                releaseBlock();
+
+            }
+
+            telemetry.update();
+            sleep(100);
+            linearMove(11,1,1,1,1);
+            sleep(100);
+            linearMove(7,-1,1,-1,1);
+            sleep(100);
+            linearMove(45,1,1,1,1);
+            sleep(100);
+            rotateArm(-180);
+
             counter++;
         }
     }
@@ -127,31 +196,21 @@ public class RightRedAuto extends LinearOpMode {
         robot.backRight.setTargetPosition(brSign * targetPosition);
 
         setWheelEncoderMode(RUN_TO_POSITION);
-        setWheelPower(0.5);
+        robot.setAllWheelPower(0.5);
 
         while (opModeIsActive() &&
-                (runtime.seconds() < 30) &&
                 (robot.frontLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy() && robot.backLeft.isBusy())) {
 
-            // Display it for the driver.
-            telemetry.addData("Path1",  "Running to %7d ", targetPosition);
-            telemetry.addData("Path2", "Current Position %7d:%7d:%7d:%7d",
-                    robot.frontRight.getCurrentPosition(),
-                    robot.frontLeft.getCurrentPosition(),
-                    robot.backRight.getCurrentPosition(),
-                    robot.backLeft.getCurrentPosition());
-
-            telemetry.update();
         }
 
-        setWheelPower(0);
+        robot.setAllWheelPower(0);
         setWheelEncoderMode(RUN_USING_ENCODER);
     }
 
     public void rotateArm(int degrees){
         setArmEncoderMode(STOP_AND_RESET_ENCODER);
 
-        int targetAngle = robot.leftArm.getCurrentPosition() + (int)(degrees * TICKS_PER_DEGREE_HEX);
+        int targetAngle = robot.leftArm.getCurrentPosition() + (int)(-(degrees - 12) * TICKS_PER_DEGREE_HEX);
         robot.leftArm.setTargetPosition(targetAngle);
         robot.rightArm.setTargetPosition(targetAngle);
 
@@ -159,7 +218,6 @@ public class RightRedAuto extends LinearOpMode {
         setArmPower(0.3);
 
         while (opModeIsActive() &&
-                (runtime.seconds() < 30) &&
                 (robot.leftArm.isBusy() && robot.rightArm.isBusy())) {
 
             // Display it for the driver.
@@ -185,23 +243,11 @@ public class RightRedAuto extends LinearOpMode {
     }
 
 
-    public float getAngle(){
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return angles.firstAngle;
-    }
-
     public void setWheelEncoderMode(RunMode r){
         robot.frontLeft.setMode(r);
         robot.frontRight.setMode(r);
         robot.backLeft.setMode(r);
         robot.backRight.setMode(r);
-    }
-
-    public void setWheelPower(double p){
-        robot.frontLeft.setPower(p);
-        robot.frontRight.setPower(p);
-        robot.backLeft.setPower(p);
-        robot.backRight.setPower(p);
     }
 
     public void setArmEncoderMode(RunMode r){
