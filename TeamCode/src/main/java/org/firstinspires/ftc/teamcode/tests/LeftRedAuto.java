@@ -28,8 +28,6 @@ public class LeftRedAuto extends LinearOpMode {
     Robot robot = new Robot();
     CSEDetermination cseDetermination = new CSEDetermination();
 
-    private ElapsedTime runtime = new ElapsedTime();
-
     public NormalizedColorSensor colorSensor;
 
     private int CSEPosition;
@@ -47,7 +45,7 @@ public class LeftRedAuto extends LinearOpMode {
 
         //Defines motors and direction
         robot.init(hardwareMap, "auto");
-        cseDetermination.init(hardwareMap);
+        cseDetermination.init(hardwareMap, "red");
 
         //Encoders
         setWheelEncoderMode(STOP_AND_RESET_ENCODER);
@@ -70,7 +68,7 @@ public class LeftRedAuto extends LinearOpMode {
             {
                 // Usually this is where you'll want to start streaming from the camera (see section 4)
                 cseDetermination.camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
-                cseDetermination.camera.setPipeline(cseDetermination.csePipeline);
+                cseDetermination.camera.setPipeline(cseDetermination.csePipelineR);
 
                 cseDetermination.camera.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
             }
@@ -135,13 +133,13 @@ public class LeftRedAuto extends LinearOpMode {
             sleep(100);
             linearMove(5, -1, -1, -1, -1);
             sleep(100);
-            rotateArm(125);
+            rotateArm(110);
             sleep(100);
             linearMove(4,1,1,1,1);
 
-            cseDetermination.camera.setPipeline(cseDetermination.csePipeline);
+            cseDetermination.camera.setPipeline(cseDetermination.csePipelineR);
             sleep(3000);
-            int position = cseDetermination.csePipeline.getAnalysis();
+            int position = cseDetermination.csePipelineR.getAnalysis();
             telemetry.addData("Position", position);
             telemetry.update();
 
@@ -152,96 +150,44 @@ public class LeftRedAuto extends LinearOpMode {
             sleep(100);
 
             if (position == 0){
-
-                sleep(5000);
-                linearMove(22,-1,-1,-1,-1);
-
-
-
-            } else if(position == 1){
-
-                sleep(7000);
-                linearMove(23,-1,-1,-1,-1);
+                rotateArm(90);
                 sleep(100);
-
-            } else if(position == 2){
-
-                linearMove(24,-1,-1,-1,-1);
-                sleep(100);
-
-                //ROTATE ARM HERE A SMAll AMOUNT
-
+                linearMove(21,-1,-1,-1,-1);
                 releaseBlock();
-            }
 
-            /*if (position == 0){
-
-                telemetry.addData("Position:", position);
-                linearMove(3, -1, -1, -1, -1);
-                sleep(100);
-                linearMove(4,1,-1,-1,1);
-                sleep(100);
-                linearMove(6, 1, -1, 1, -1);
-                sleep(100);
-                linearMove(24,-1,1,-1,-1);
-                sleep(100);
-                rotateArm(50);
-                sleep(300);
-                releaseBlock();
-                sleep(100);
 
             } else if (position == 1){
-
-                telemetry.addData("Position:", position);
-                linearMove(3, -1, -1, -1, -1);
-                sleep(100);
-                linearMove(6, 1, -1, 1, -1);
-                sleep(100);
-                linearMove(20,-1,1,-1,-1);
-                sleep(100);
-                rotateArm(65);
-                sleep(1000);
-                linearMove(4, -1,-1, -1, -1);
+                rotateArm(60);
                 sleep(300);
+                linearMove(22, -1, -1, -1, -1);
                 releaseBlock();
-                sleep(100);
-            } else if (position == 2){
-                telemetry.addData("Position:", position);
-                linearMove(3, -1, -1, -1, -1);
-                sleep(100);
-                linearMove(6, 1, -1, 1, -1);
-                sleep(100);
-                linearMove(18,-1,1,-1,-1);
-                sleep(100);
-                rotateArm(80);
-                sleep(300);
-                linearMove(6, -1,-1, -1, -1);
-                sleep(1000);
-                releaseBlock();
-                sleep(100);
 
             } else {
-                telemetry.addData("Position:", "Robot is fucking gay");
+                rotateArm(50);
+                sleep(100);
+                linearMove(24, -1, -1, -1, -1);
+                releaseBlock();
+
             }
+
+            sleep(100);
+            linearMove(11,1,1,1,1);
+            sleep(100);
+            linearMove(9,1,-1,1,-1);
+            sleep(100);
+            linearMove(25,1,1,1,1);
+            sleep(100);
+            linearMove(17,-1,1,1,-1);
+            sleep(100);
+            linearMove(4,1,1,1,1);
+            sleep(100);
+            rotateArm(-120);
+            sleep(100);
+
 
             telemetry.update();
 
-            sleep(500);
-            linearMove(14,1,1,1,1);
-            sleep(100);
-            linearMove(15,1,-1,1,-1);
-            sleep(100);
-            linearMove(35,1,1,1,1);
-            sleep(100);*/
 
-            //possibly sleep here if it's detecting incorrect position at first
-            //CSEPosition = cseDetermination.csePipeline.getAnalysis();
-            //telemetry.addData("Position", CSEPosition);
-
-
-            while(runtime.seconds() < 29){
-
-            }
 
             counter++;
         }
@@ -261,7 +207,6 @@ public class LeftRedAuto extends LinearOpMode {
         robot.setAllWheelPower(0.5);
 
         while (opModeIsActive() &&
-                (runtime.seconds() < 30) &&
                 (robot.frontLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy() && robot.backLeft.isBusy())) {
 
         }
@@ -281,7 +226,6 @@ public class LeftRedAuto extends LinearOpMode {
         setArmPower(0.3);
 
         while (opModeIsActive() &&
-                (runtime.seconds() < 30) &&
                 (robot.leftArm.isBusy() && robot.rightArm.isBusy())) {
 
             // Display it for the driver.

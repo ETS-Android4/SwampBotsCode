@@ -56,9 +56,9 @@ public class FirstBasicMovement extends LinearOpMode {
             robot.rightArm.setPower(armVertical * 0.3);
             
             if(gamepad1.right_trigger > 0){
-                robot.carousel.setPower(carousselMotorPowerF);
+                robot.carousel.setPower(0.85*carousselMotorPowerF);
             } else if(gamepad1.left_trigger > 0){
-                robot.carousel.setPower(-carousselMotorPowerR);
+                robot.carousel.setPower(0.85*-carousselMotorPowerR);
             } else {
                 robot.carousel.setPower(0);
             }
