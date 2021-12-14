@@ -24,7 +24,7 @@ public class LeftBlueAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException{
 
-        //Defines motors and direction
+        //Initialize hardware and other objects
         robot.init(hardwareMap, "auto");
         webcam.init(hardwareMap);
         csePipeline = new CSEDeterminationPipeline("blue");
