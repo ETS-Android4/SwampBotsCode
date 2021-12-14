@@ -30,7 +30,6 @@ public class Robot {
     public Servo leftHand = null;
     public Servo rightHand = null;
 
-    public WebcamName webcamName = null;
 
     //local OpMode members
     HardwareMap hw = null;
@@ -53,7 +52,7 @@ public class Robot {
         rightHand = hw.servo.get("rightHand");
         leftHand = hw.servo.get("leftHand");
         carousel = hw.dcMotor.get("carrouselMotor");
-        webcamName = hw.get(WebcamName.class, "Webcam 1");
+
 
 
         //Set motor direction

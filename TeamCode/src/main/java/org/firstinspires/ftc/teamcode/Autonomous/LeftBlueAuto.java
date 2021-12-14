@@ -15,7 +15,9 @@ public class LeftBlueAuto extends LinearOpMode {
 
     Robot robot = new Robot();
     Movement moves = new Movement();
-    CSEDetermination cseDetermination = new CSEDetermination();
+    Webcam webcam = new Webcam();
+    CSEDeterminationPipeline csePipeline = null;
+
 
     private int CSEPosition;
 
@@ -24,20 +26,26 @@ public class LeftBlueAuto extends LinearOpMode {
 
         //Defines motors and direction
         robot.init(hardwareMap, "auto");
-        cseDetermination.init(hardwareMap, "blue");
+        webcam.init(hardwareMap);
+        csePipeline = new CSEDeterminationPipeline("blue");
+
+        webcam.camera.setPipeline(csePipeline);
+        sleep(3000);
+        CSEPosition = csePipeline.getAnalysis();
+
 
 
         //Event listener for CSEDetermination
-        cseDetermination.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        webcam.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
             public void onOpened()
             {
                 // Usually this is where you'll want to start streaming from the camera (see section 4)
-                cseDetermination.camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
-                cseDetermination.camera.setPipeline(cseDetermination.csePipeline);
+                webcam.camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
+                webcam.camera.setPipeline(csePipeline);
 
-                cseDetermination.camera.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+                webcam.camera.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
             }
             @Override
             public void onError(int errorCode)
@@ -105,11 +113,6 @@ public class LeftBlueAuto extends LinearOpMode {
             sleep(100);
             moves.linearMove(4,1,1,1,1);
 
-            cseDetermination.camera.setPipeline(cseDetermination.csePipeline);
-            sleep(3000);
-            int position = cseDetermination.csePipeline.getAnalysis();
-            telemetry.addData("Position", position);
-            telemetry.update();
 
             moves.linearMove(3, -1, -1, -1, -1);
             sleep(100);
@@ -118,13 +121,13 @@ public class LeftBlueAuto extends LinearOpMode {
             moves.linearMove(9, 1, -1, 1, -1);
             sleep(100);
 
-            if (position == 0){
+            if (CSEPosition == 0){
                 moves.rotateArm(90);
                 sleep(100);
                 moves.linearMove(21,-1,-1,-1,-1);
 
 
-            } else if (position == 1){
+            } else if (CSEPosition == 1){
                 moves.rotateArm(60);
                 sleep(300);
                 moves.linearMove(22, -1, -1, -1, -1);
