@@ -28,7 +28,8 @@ public class LeftBlueAuto extends LinearOpMode {
         robot.init(hardwareMap, "auto");
         webcam.init(hardwareMap);
         csePipeline = new CSEDeterminationPipeline("blue");
-
+        
+        //Get position of custom shipping element
         webcam.camera.setPipeline(csePipeline);
         sleep(3000);
         CSEPosition = csePipeline.getAnalysis();
@@ -105,6 +106,7 @@ public class LeftBlueAuto extends LinearOpMode {
                 24 INCHES = 90 DEGREE TURN WHEEl
              */
 
+            //Move arm out of way for camera to see the CSE, HOPEFULLY DELETE SOON
             robot.grabBlock();
             sleep(100);
             moves.linearMove(5, -1, -1, -1, -1);
@@ -113,7 +115,8 @@ public class LeftBlueAuto extends LinearOpMode {
             sleep(100);
             moves.linearMove(4,1,1,1,1);
 
-
+            
+            //Strafe and rotate to point shipping hub
             moves.linearMove(3, -1, -1, -1, -1);
             sleep(100);
             moves.linearMove(3,1,-1,-1,1);
@@ -121,6 +124,7 @@ public class LeftBlueAuto extends LinearOpMode {
             moves.linearMove(9, 1, -1, 1, -1);
             sleep(100);
 
+            //Movements specific to the level we are delivering the block to on shipping hub
             if (CSEPosition == 0){
                 moves.rotateArm(90);
                 sleep(100);
@@ -139,6 +143,7 @@ public class LeftBlueAuto extends LinearOpMode {
 
             }
 
+            //Movements for parking
             robot.releaseBlock();
             sleep(100);
             moves.linearMove(10,1,1,1,1);
