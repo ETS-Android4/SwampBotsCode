@@ -11,13 +11,20 @@ public class Movement {
 
     Robot robot = new Robot();
 
+    
+    //CONSTANTS FOR ENCODER TICK VALUES
+    
     static final double TICKS_PER_MOTOR_REV = 537.7;
     static final double WHEEL_DIAMETER_INCHES = 3.93701;
     static final double TICKS_PER_INCH_REV = TICKS_PER_MOTOR_REV / (WHEEL_DIAMETER_INCHES * 3.141592);
 
     static final double TICKS_PER_MOTOR_HEX = 288.0;
     static final double TICKS_PER_DEGREE_HEX = TICKS_PER_MOTOR_HEX / 360.0;
-
+    
+    
+    
+    //For movement forward, backward, pivoting, and strafing. SOON YOU HAVE TO GET NEW METHODS FOR PIVOTING AND STRAFING
+    
     public void linearMove(int inches, int flSign, int frSign, int blSign, int brSign){
         robot.setWheelEncoderMode(STOP_AND_RESET_ENCODER);
 
@@ -39,6 +46,9 @@ public class Movement {
         robot.setWheelEncoderMode(RUN_USING_ENCODER);
     }
 
+    
+    //Method for rotation of arm with encoders 
+    
     public void rotateArm(int degrees){
         robot.setArmEncoderMode(STOP_AND_RESET_ENCODER);
 
