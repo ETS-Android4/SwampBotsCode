@@ -10,18 +10,23 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class CSEDeterminationPipeline extends OpenCvPipeline {
 
+    //Either red or blue, represents which side of field we start on
     String color;
 
+    //Just for color of rectangles we draw on frame
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
 
+    //Tested points for where the regions should be on the frame. Adjust if camera is off
     static final Point REGION1_TOP_LEFT_ANCHOR_POINT = new Point(65, 380);
     static final Point REGION2_TOP_LEFT_ANCHOR_POINT = new Point(620, 410);
     static final Point REGION3_TOP_LEFT_ANCHOR_POINT = new Point(1075, 440);
 
     static final int REGION_WIDTH = 200;
     static final int REGION_HEIGHT = 200;
-
+    
+    
+    //Create points for corners of rectangles
     Point region1_PointA = new Point(REGION1_TOP_LEFT_ANCHOR_POINT.x, REGION1_TOP_LEFT_ANCHOR_POINT.y);
     Point region1_PointB = new Point(REGION1_TOP_LEFT_ANCHOR_POINT.x + REGION_WIDTH, REGION1_TOP_LEFT_ANCHOR_POINT.y + REGION_HEIGHT);
 
@@ -32,22 +37,25 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     Point region3_PointB = new Point(REGION3_TOP_LEFT_ANCHOR_POINT.x + REGION_WIDTH, REGION3_TOP_LEFT_ANCHOR_POINT.y + REGION_HEIGHT);
 
 
-    Mat region1_Cb, region2_Cb, region3_Cb;
+    Mat region1_Cb, region2_Cb, region3_Cb;   //Mats for cb of each region
     Mat YCrCb = new Mat();
     Mat Cb = new Mat();
-    int avg1, avg2, avg3;
+    int avg1, avg2, avg3;    //cb values
 
-    int position;
+    int position;  //cse position. Either 0,1,2
 
     public CSEDeterminationPipeline(String c){
         color = c;
     }
 
+    
+    //Conversion of initial frame into YCrCb
     void inputToCb(Mat input){
         Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_BGR2YCrCb);
         Core.extractChannel(YCrCb, Cb, 2);
     }
 
+    
     @Override
     public void init(Mat firstFrame){
         inputToCb(firstFrame);
@@ -85,7 +93,7 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
                 BLUE,
                 2);
 
-        int max = 0, min = 0;
+        int max = 0, min = 0;   //Either using a max or a min based on what color tape we're looking at
 
         if(color.equals("blue")){
 
@@ -103,6 +111,8 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
 
         if(min == avg1 || max == avg1)
         {
+            
+            //Give a value to position and highlight the rectangle that is being selected
             position = 0;
 
             Imgproc.rectangle(
@@ -138,6 +148,7 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
         return input;
     }
 
+    //Function used to give opmode the information about position
     public int getAnalysis(){
         return position;
     }
