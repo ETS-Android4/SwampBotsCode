@@ -37,10 +37,11 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     Point region3_PointB = new Point(REGION3_TOP_LEFT_ANCHOR_POINT.x + REGION_WIDTH, REGION3_TOP_LEFT_ANCHOR_POINT.y + REGION_HEIGHT);
 
 
-    Mat region1_Cb, region2_Cb, region3_Cb;   //Mats for cb of each region
+    Mat region1_Cb, region2_Cb, region3_Cb, region4_Cr;   //Mats for cb of each region
     Mat YCrCb = new Mat();
     Mat Cb = new Mat();
-    int avg1, avg2, avg3;    //cb values
+    Mat Cr = new Mat();
+    int avg1, avg2, avg3, avg4;    //cb values
 
     int position;  //cse position. Either 0,1,2
 
@@ -53,6 +54,9 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     void inputToCb(Mat input){
         Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_BGR2YCrCb);
         Core.extractChannel(YCrCb, Cb, 2);
+
+        //Only for testing
+        Core.extractChannel(YCrCb, Cr, 1);
     }
 
     
@@ -63,12 +67,15 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
         region1_Cb = Cb.submat(new Rect(region1_PointA, region1_PointB));
         region2_Cb = Cb.submat(new Rect(region2_PointA, region2_PointB));
         region3_Cb = Cb.submat(new Rect(region3_PointA, region3_PointB));
+
+        region4_Cr = Cr.submat(new Rect(region1_PointA, region1_PointB));
     }
 
     public Mat processFrame(Mat input){
         inputToCb(input);
 
         avg1 = (int) Core.mean(region1_Cb).val[0];
+        avg4 = (int) Core.mean(region1_Cb).val[0];
         avg2 = (int) Core.mean(region2_Cb).val[0];
         avg3 = (int) Core.mean(region3_Cb).val[0];
 
@@ -115,34 +122,34 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
             //Give a value to position and highlight the rectangle that is being selected
             position = 0;
 
-            Imgproc.rectangle(
+            /*Imgproc.rectangle(
                     input,
                     region1_PointA,
                     region1_PointB,
                     GREEN,
-                    -1);
+                    -1);*/
         }
         else if(min == avg2 || max == avg2)
         {
             position = 1;
 
-            Imgproc.rectangle(
+            /*Imgproc.rectangle(
                     input,
                     region2_PointA,
                     region2_PointB,
                     GREEN,
-                    -1);
+                    -1);*/
         }
         else if(min == avg3 || max == avg3)
         {
             position = 2;
 
-            Imgproc.rectangle(
+            /*Imgproc.rectangle(
                     input,
                     region3_PointA,
                     region3_PointB,
                     GREEN,
-                    -1);
+                    -1);*/
         }
 
         return input;
@@ -152,5 +159,8 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     public int getAnalysis(){
         return position;
     }
+
+    public int getCbColorValue(){ return avg1; }
+    public int getCrColorValue(){ return avg4; }
 
 }
