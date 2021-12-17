@@ -51,7 +51,7 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     
     //Conversion of initial frame into YCrCb
     void inputToCb(Mat input){
-        Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_BGR2YCrCb);
+        Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
         Core.extractChannel(YCrCb, Cb, 2);
     }
 
@@ -152,5 +152,6 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     public int getAnalysis(){
         return position;
     }
+    public int getCbValue(){ return avg1; }
 
 }

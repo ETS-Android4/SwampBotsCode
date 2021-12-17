@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Tests;
 
+import org.firstinspires.ftc.teamcode.Camera.*;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
@@ -7,6 +10,7 @@ import org.firstinspires.ftc.teamcode.Camera.Webcam;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
+@Autonomous(name = "TestOpMode", group = "tests")
 public class TestOpMode extends LinearOpMode {
 
     Webcam webcam = new Webcam();
@@ -27,10 +31,6 @@ public class TestOpMode extends LinearOpMode {
                 webcam.camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
                 webcam.camera.setPipeline(testPipeline);
 
-                telemetry.addData("Blue: ", testPipeline.getCbValue());
-                telemetry.addData("Red: ", testPipeline.getCrValue());
-                telemetry.update();
-
                 webcam.camera.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
             }
             @Override
@@ -43,8 +43,13 @@ public class TestOpMode extends LinearOpMode {
         });
 
         waitForStart();
-        while(opModeIsActive()){
 
-        }
+
+        webcam.camera.setPipeline(testPipeline);
+        sleep(3000);
+        telemetry.addData("Blue", testPipeline.getValue());
+        telemetry.update();
+        sleep(5000);
+
     }
 }
