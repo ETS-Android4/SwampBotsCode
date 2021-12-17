@@ -46,9 +46,6 @@ public class LeftBlueAuto extends LinearOpMode {
                 webcam.camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
                 webcam.camera.setPipeline(csePipeline);
 
-                telemetry.addData("Cb: ", csePipeline.getCbColorValue());
-                telemetry.addData("Cr: ", csePipeline.getCrColorValue());
-                telemetry.update();
 
                 webcam.camera.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
             }
