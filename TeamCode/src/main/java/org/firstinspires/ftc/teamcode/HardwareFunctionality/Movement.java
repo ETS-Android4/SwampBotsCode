@@ -66,5 +66,4 @@ public class Movement {
         robot.setArmPower(0);
         robot.setArmEncoderMode(RUN_USING_ENCODER);
     }
-
 }

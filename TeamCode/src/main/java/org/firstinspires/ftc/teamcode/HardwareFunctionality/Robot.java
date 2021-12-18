@@ -6,6 +6,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENC
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -25,7 +26,7 @@ public class Robot {
     public DcMotor leftArm = null;
     public DcMotor rightArm = null;
 
-    public DcMotor carousel = null;
+    public DcMotorEx carousel = null;
 
     public Servo leftHand = null;
     public Servo rightHand = null;
@@ -51,7 +52,7 @@ public class Robot {
         leftArm = hw.dcMotor.get("motor6");
         rightHand = hw.servo.get("rightHand");
         leftHand = hw.servo.get("leftHand");
-        carousel = hw.dcMotor.get("carrouselMotor");
+        carousel = hw.get(DcMotorEx.class, "carrouselMotor");
 
 
 

@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode.HardwareFunctionality;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 
 @TeleOp(name = "FirstBasicMovement", group = "Test")
 public class FirstBasicMovement extends LinearOpMode {
 
     Robot robot = new Robot();
-
+    boolean trigger_pressed;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -19,6 +21,8 @@ public class FirstBasicMovement extends LinearOpMode {
         //Setting Initial Servo Positions
         robot.leftHand.setPosition(0.75);
         robot.rightHand.setPosition(0.44);
+
+        trigger_pressed = false;
 
       //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
@@ -54,13 +58,31 @@ public class FirstBasicMovement extends LinearOpMode {
             armVertical = gamepad2.left_stick_y;
             robot.leftArm.setPower(armVertical * 0.3);
             robot.rightArm.setPower(armVertical * 0.3);
-            
+
+
+            //YOU NEED TO CHECK IF OUR MOTOR CAN BE A DCMOTOREX OBJECT. USE THE instanceOf TO CHECK
             if(gamepad1.right_trigger > 0){
-                robot.carousel.setPower(0.85*carousselMotorPowerF);
+                if(!trigger_pressed){
+                    robot.carousel.setVelocity(120, AngleUnit.DEGREES);
+                    time = 0;
+                    trigger_pressed = true;
+                } else {
+                    robot.carousel.setVelocity(getAngularVelocity(time), AngleUnit.DEGREES);
+                }
+
             } else if(gamepad1.left_trigger > 0){
-                robot.carousel.setPower(0.85*-carousselMotorPowerR);
+                if(!trigger_pressed){
+                    robot.carousel.setVelocity(-120, AngleUnit.DEGREES);
+                    time = 0;
+                    trigger_pressed = true;
+                } else {
+                    robot.carousel.setVelocity(-getAngularVelocity(time), AngleUnit.DEGREES);
+                }
+
+
             } else {
                 robot.carousel.setPower(0);
+                trigger_pressed = false;
             }
 
             //Servo Controls
@@ -91,5 +113,10 @@ public class FirstBasicMovement extends LinearOpMode {
             telemetry.update();
             idle();
         }
+    }
+
+    public double getAngularVelocity(double seconds){
+        //Linear equation that will return the wanted angular velocity in degrees/second.
+        return 20*seconds + 120;
     }
 }
