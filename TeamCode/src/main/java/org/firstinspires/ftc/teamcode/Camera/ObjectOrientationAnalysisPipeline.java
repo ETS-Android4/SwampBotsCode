@@ -15,47 +15,9 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 
-@Autonomous
-public class ObjectOrientationAnalysis extends LinearOpMode {
-
-    Webcam webcam = new Webcam();
-    ObjectOrientationAnalysisPipeline pipeline = new ObjectOrientationAnalysisPipeline();
 
 
-    public void runOpMode(){
-
-        webcam.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                // Usually this is where you'll want to start streaming from the camera (see section 4)
-                webcam.camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
-                webcam.camera.setPipeline(pipeline);
-
-                webcam.camera.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
-            }
-            @Override
-            public void onError(int errorCode)
-            {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
-            }
-        });
-
-        waitForStart();
-
-        while(opModeIsActive()){
-
-            sleep(20);
-
-
-        }
-    }
-
-
-    static class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
+public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
         //Transition mats for storing different stages in process of finding contours.
         Mat YCrCb = new Mat();
@@ -65,7 +27,7 @@ public class ObjectOrientationAnalysis extends LinearOpMode {
         Mat contoursOnPlainImage = new Mat();
 
 
-        static final int CB_CHAN_MASK_THRESHOLD = 80;
+        static final int CB_CHAN_MASK_THRESHOLD = 108;
         static final double DENSITY_UPRIGHT_THRESHOLD = 0.03;
 
         //Used in morphing mask
@@ -168,8 +130,8 @@ public class ObjectOrientationAnalysis extends LinearOpMode {
             Imgproc.dilate(output, output, dilateElement);
             Imgproc.dilate(output, output, dilateElement);
         }
-    }
 }
+
 
 
 
