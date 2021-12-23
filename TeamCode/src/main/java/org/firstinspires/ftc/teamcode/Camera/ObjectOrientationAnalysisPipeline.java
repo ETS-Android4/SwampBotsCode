@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -84,16 +86,30 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
         public Mat processFrame(Mat input){
             internalObjectList.clear();
+            int xSum = 0, ySum = 0;
+            int numPoints = 0;
 
-            Mat testMat = findContours(input);
-            return testMat;
-            /*for(MatOfPoint contours : findContours()){
-                analyzeContours();
-            }*/
+            for(MatOfPoint contour : findContours(input)){
+
+                //int[] tempInfo = analyzeContours(contour, input);
+                Point[] points = contour.toArray();
+                numPoints += points.length;
+
+                for(Point p : points){
+                    xSum += (int)p.x;
+                    ySum += (int)p.y;
+                }
+
+            }
+
+            Point midPointOfObject = new Point((int)xSum/numPoints, (int)ySum/numPoints);
+
+            Imgproc.circle(contoursOnPlainImage, midPointOfObject, 5, BLUE, -1);
+            return contoursOnPlainImage;
         }
 
 
-        public Mat findContours(Mat input){
+        public ArrayList<MatOfPoint> findContours(Mat input){
             //Initialize list we will eventually return
             ArrayList<MatOfPoint> contoursList = new ArrayList<>();
 
@@ -115,8 +131,8 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
             input.copyTo(contoursOnPlainImage);
             Imgproc.drawContours(contoursOnPlainImage, contoursList, -1, BLUE, CONTOUR_LINE_THICKNESS, 8);
-            return contoursOnPlainImage;
-            //return contoursList;
+
+            return contoursList;
         }
 
         public void morphMask(Mat input, Mat output){
@@ -129,6 +145,10 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
             //Dilation is identical to erosion, however, we just set the pixels values to the highest value in the kernel.
             Imgproc.dilate(output, output, dilateElement);
             Imgproc.dilate(output, output, dilateElement);
+        }
+
+        public void analyzeContours(MatOfPoint contour, Mat input){
+            
         }
 }
 
