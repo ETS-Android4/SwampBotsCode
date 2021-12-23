@@ -43,6 +43,12 @@ public class TestOpMode extends LinearOpMode {
         });
 
         waitForStart();
+        while(opModeIsActive()){
+            webcam.camera.setPipeline(testPipeline);
+            sleep(3500);
+            telemetry.addData("Number of Contours", testPipeline.getContoursListLength());
+            telemetry.update();
+        }
     }
 
 

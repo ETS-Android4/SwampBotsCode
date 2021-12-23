@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Camera;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.checkerframework.checker.units.qual.A;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -27,6 +28,7 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
         Mat threshold = new Mat();
         Mat morphedThreshold = new Mat();
         Mat contoursOnPlainImage = new Mat();
+        ArrayList<MatOfPoint> cList = new ArrayList<MatOfPoint>();
 
 
         static final int CB_CHAN_MASK_THRESHOLD = 108;
@@ -88,8 +90,9 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
             internalObjectList.clear();
             int xSum = 0, ySum = 0;
             int numPoints = 0;
+            cList = findContours(input);
 
-            for(MatOfPoint contour : findContours(input)){
+            for(MatOfPoint contour : cList){
 
                 //int[] tempInfo = analyzeContours(contour, input);
                 Point[] points = contour.toArray();
@@ -149,6 +152,10 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
         public void analyzeContours(MatOfPoint contour, Mat input){
             
+        }
+
+        public int getContoursListLength(){
+            return cList.size();
         }
 }
 
