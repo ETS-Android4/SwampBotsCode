@@ -47,7 +47,7 @@ public class FirstBasicMovement extends LinearOpMode {
 
             //Defines direction that motors move based on their orientation to one another
             vertical = -gamepad1.left_stick_y;
-            horizontal = -gamepad1.left_stick_x;
+            horizontal = gamepad1.left_stick_x;
             pivot = gamepad1.right_stick_x;
 
             robot.frontRight.setPower(-pivot + vertical - horizontal);
@@ -64,7 +64,7 @@ public class FirstBasicMovement extends LinearOpMode {
             if(gamepad1.right_trigger > 0){
                 if(!trigger_pressed){
                     robot.carousel.setVelocity(120, AngleUnit.DEGREES);
-                    time = 0;
+                    resetStartTime();
                     trigger_pressed = true;
                 } else {
                     robot.carousel.setVelocity(getAngularVelocity(time), AngleUnit.DEGREES);
@@ -73,7 +73,7 @@ public class FirstBasicMovement extends LinearOpMode {
             } else if(gamepad1.left_trigger > 0){
                 if(!trigger_pressed){
                     robot.carousel.setVelocity(-120, AngleUnit.DEGREES);
-                    time = 0;
+                    resetStartTime();
                     trigger_pressed = true;
                 } else {
                     robot.carousel.setVelocity(-getAngularVelocity(time), AngleUnit.DEGREES);

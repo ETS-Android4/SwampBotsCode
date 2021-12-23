@@ -14,11 +14,35 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Autonomous(name = "TestOpMode", group = "tests")
 public class TestOpMode extends LinearOpMode {
 
-    public void runOpMode(){
+    Webcam webcam = new Webcam();
+    ObjectOrientationAnalysisPipeline testPipeline = null;
+
+    public void runOpMode() throws InterruptedException{
+        webcam.init(hardwareMap);
+        testPipeline = new ObjectOrientationAnalysisPipeline();
+
+        webcam.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                // Usually this is where you'll want to start streaming from the camera (see section 4)
+                webcam.camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
+                webcam.camera.setPipeline(testPipeline);
+
+
+                webcam.camera.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+            }
+            @Override
+            public void onError(int errorCode)
+            {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+            }
+        });
 
         waitForStart();
-
-        //Need to test to see how 'time' works for the carousel acceleration. Does setting time = 0 reset the time?
     }
 
 

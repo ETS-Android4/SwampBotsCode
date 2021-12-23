@@ -152,6 +152,5 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     public int getAnalysis(){
         return position;
     }
-    public int getCbValue(){ return avg1; }
 
 }

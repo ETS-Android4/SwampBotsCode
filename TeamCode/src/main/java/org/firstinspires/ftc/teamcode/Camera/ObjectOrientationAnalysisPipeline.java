@@ -106,8 +106,8 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
             //And vice versa if it's under the threshold value.
             //Then erode and dilate the image so the edges are cleaner and only object stands out
             Imgproc.threshold(Cb, threshold, CB_CHAN_MASK_THRESHOLD, 255, Imgproc.THRESH_BINARY_INV);
-            return threshold;
-            /*morphMask(threshold, morphedThreshold);
+
+            morphMask(threshold, morphedThreshold);
 
             //Algorithm to find contours for you. 3rd parameter contains information about contour hierarchy. RETR_EXTERNAL only
             //retrieves the outmost layer of contours. CHAIN_APPROX_NONE is just algorithm method.
@@ -115,8 +115,8 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
             input.copyTo(contoursOnPlainImage);
             Imgproc.drawContours(contoursOnPlainImage, contoursList, -1, BLUE, CONTOUR_LINE_THICKNESS, 8);
-
-            return contoursList;*/
+            return contoursOnPlainImage;
+            //return contoursList;
         }
 
         public void morphMask(Mat input, Mat output){

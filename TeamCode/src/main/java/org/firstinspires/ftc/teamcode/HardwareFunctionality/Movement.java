@@ -15,7 +15,7 @@ public class Movement {
     //CONSTANTS FOR ENCODER TICK VALUES
     
     static final double TICKS_PER_MOTOR_REV = 537.7;
-    static final double WHEEL_DIAMETER_INCHES = 3.93701;
+    static final double WHEEL_DIAMETER_INCHES = 3.77953;
     static final double TICKS_PER_INCH_REV = TICKS_PER_MOTOR_REV / (WHEEL_DIAMETER_INCHES * 3.141592);
 
     static final double TICKS_PER_MOTOR_HEX = 288.0;
