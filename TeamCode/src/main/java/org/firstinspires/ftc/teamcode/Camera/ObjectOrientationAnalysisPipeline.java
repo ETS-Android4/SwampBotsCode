@@ -9,6 +9,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
+import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -17,7 +18,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
-
+import java.util.Arrays;
+import java.util.List;
 
 
 public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
@@ -88,26 +90,19 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
         public Mat processFrame(Mat input){
             internalObjectList.clear();
-            int xSum = 0, ySum = 0;
-            int numPoints = 0;
-            cList = findContours(input);
 
-            for(MatOfPoint contour : cList){
+            ArrayList<MatOfPoint> contourList = findContours(input);
 
-                //int[] tempInfo = analyzeContours(contour, input);
-                Point[] points = contour.toArray();
-                numPoints += points.length;
+            if(contourList.size() != 0){
+                for(MatOfPoint contour : contourList){
 
-                for(Point p : points){
-                    xSum += (int)p.x;
-                    ySum += (int)p.y;
+                    analyzeContour(contour, input);
+
                 }
-
             }
 
-            Point midPointOfObject = new Point((int)xSum/numPoints, (int)ySum/numPoints);
 
-            Imgproc.circle(contoursOnPlainImage, midPointOfObject, 5, BLUE, -1);
+
             return contoursOnPlainImage;
         }
 
@@ -150,13 +145,70 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
             Imgproc.dilate(output, output, dilateElement);
         }
 
-        public void analyzeContours(MatOfPoint contour, Mat input){
-            
+        public void analyzeContour(MatOfPoint contour, Mat input){
+            Point[] points = contour.toArray();
+            MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
+
+            Imgproc.circle(contoursOnPlainImage, findMidpoint(contour, points), 5, BLUE, -1);
+
+            RotatedRect rotatedRectFitToContour = Imgproc.minAreaRect(contour2f);
+            drawRotatedRect(rotatedRectFitToContour, contoursOnPlainImage);
+
+            //PAUSE HERE TO UNDERSTAND BETTER WHAT ROTATED RECTANGLE IS AND WHAT ITS COMPONENTS REPRESENT
+            double rotRectAngle = rotatedRectFitToContour.angle;
+            if(rotatedRectFitToContour.size.width < rotatedRectFitToContour.size.height){
+                rotRectAngle += 90;
+            }
+
+            double midlineSlope = Math.tan(Math.toRadians(rotRectAngle));
+
+            ArrayList<Point> aboveMidline = new ArrayList<Point>(points.length/2);
+            ArrayList<Point> belowMidline = new ArrayList<Point>(points.length/2);
+
+            //TRY TO UNDERSTAND THE MATH UNDERLYING THE SPLIT OF POINTS HERE
+            for(Point p : points){
+                if(rotatedRectFitToContour.center.y - p.y > midlineSlope * (rotatedRectFitToContour.center.x - p.x)){
+                    aboveMidline.add(p);
+                } else {
+                    belowMidline.add(p);
+                }
+            }
+
+
         }
 
-        public int getContoursListLength(){
-            return cList.size();
+
+        static ContourRegionAnalysis analyzeContourRegion(ArrayList<Point> contourPoints){
+            MatOfPoint matOfPoint = new MatOfPoint();
+            matOfPoint.fromList(contourPoints);
+            List<MatOfPoint> listHolderOfMatOfPoint = Arrays.asList(matOfPoint);
+            return null;
         }
+
+
+        public Point findMidpoint(MatOfPoint contour, Point[] p){
+            int xSum = 0, ySum = 0;
+            int numPoints = 0;
+
+            numPoints += p.length;
+
+            for(Point point : p) {
+                xSum += (int) point.x;
+                ySum += (int) point.y;
+            }
+
+            return new Point((int)xSum/numPoints, (int)ySum/numPoints);
+        }
+
+        public void drawRotatedRect(RotatedRect rectangle, Mat image){
+            Point[] corners = new Point[4];
+
+            rectangle.points(corners);
+            for(int i = 0; i < 4; i++){
+                Imgproc.line(image, corners[i], corners[(i+1)%4], RED, 2);
+            }
+        }
+
 }
 
 
