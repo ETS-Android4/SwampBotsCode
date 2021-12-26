@@ -149,7 +149,7 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
             Point[] points = contour.toArray();
             MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
 
-            Imgproc.circle(contoursOnPlainImage, findMidpoint(contour, points), 5, BLUE, -1);
+            Imgproc.circle(contoursOnPlainImage, findMidpoint(points), 5, BLUE, -1);
 
             RotatedRect rotatedRectFitToContour = Imgproc.minAreaRect(contour2f);
             drawRotatedRect(rotatedRectFitToContour, contoursOnPlainImage);
@@ -186,7 +186,7 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
         }
 
 
-        public Point findMidpoint(MatOfPoint contour, Point[] p){
+        public Point findMidpoint(Point[] p){
             int xSum = 0, ySum = 0;
             int numPoints = 0;
 
