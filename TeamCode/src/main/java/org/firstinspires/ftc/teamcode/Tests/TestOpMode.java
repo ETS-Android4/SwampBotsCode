@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
+import org.firstinspires.ftc.teamcode.Camera.CSEDeterminationPipeline;
 import org.firstinspires.ftc.teamcode.Camera.ObjectOrientationAnalysisPipeline;
 import org.firstinspires.ftc.teamcode.Camera.Webcam;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -15,11 +16,11 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 public class TestOpMode extends LinearOpMode {
 
     Webcam webcam = new Webcam();
-    ObjectOrientationAnalysisPipeline testPipeline = null;
+    CSEDeterminationPipeline testPipeline = null;
 
     public void runOpMode() throws InterruptedException{
         webcam.init(hardwareMap);
-        testPipeline = new ObjectOrientationAnalysisPipeline();
+        testPipeline = new CSEDeterminationPipeline("blue");
 
         webcam.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -44,10 +45,13 @@ public class TestOpMode extends LinearOpMode {
 
         waitForStart();
         while(opModeIsActive()){
+            sleep(200);
             webcam.camera.setPipeline(testPipeline);
-            sleep(3500);
-            telemetry.addData("Number of Contours", testPipeline.getContoursListLength());
-            telemetry.update();
+            while(time < 30){
+                telemetry.addData("Position", testPipeline.getAnalysis());
+                telemetry.update();
+            }
+
         }
     }
 

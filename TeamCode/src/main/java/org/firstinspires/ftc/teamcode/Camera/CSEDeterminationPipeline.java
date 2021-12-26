@@ -38,9 +38,12 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
 
 
     Mat region1_Cb, region2_Cb, region3_Cb;   //Mats for cb of each region
+    Mat region1_Cr, region2_Cr, region3_Cr;
     Mat YCrCb = new Mat();
+    Mat Cr = new Mat();
     Mat Cb = new Mat();
-    int avg1, avg2, avg3;    //cb values
+    int avg1B, avg2B, avg3B;    //cb values
+    int avg1R, avg2R, avg3R;
 
     int position;  //cse position. Either 0,1,2
 
@@ -53,6 +56,7 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     void inputToCb(Mat input){
         Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
         Core.extractChannel(YCrCb, Cb, 2);
+        Core.extractChannel(YCrCb, Cr, 1);
     }
 
     
@@ -63,14 +67,22 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
         region1_Cb = Cb.submat(new Rect(region1_PointA, region1_PointB));
         region2_Cb = Cb.submat(new Rect(region2_PointA, region2_PointB));
         region3_Cb = Cb.submat(new Rect(region3_PointA, region3_PointB));
+
+        region1_Cr = Cr.submat(new Rect(region1_PointA, region1_PointB));
+        region2_Cr = Cr.submat(new Rect(region2_PointA, region2_PointB));
+        region3_Cr = Cr.submat(new Rect(region3_PointA, region3_PointB));
     }
 
     public Mat processFrame(Mat input){
         inputToCb(input);
 
-        avg1 = (int) Core.mean(region1_Cb).val[0];
-        avg2 = (int) Core.mean(region2_Cb).val[0];
-        avg3 = (int) Core.mean(region3_Cb).val[0];
+        avg1B = (int) Core.mean(region1_Cb).val[0];
+        avg2B = (int) Core.mean(region2_Cb).val[0];
+        avg3B = (int) Core.mean(region3_Cb).val[0];
+
+        avg1R = (int) Core.mean(region1_Cr).val[0];
+        avg2R = (int) Core.mean(region2_Cr).val[0];
+        avg3R = (int) Core.mean(region3_Cr).val[0];
 
         Imgproc.rectangle(
                 input, // Buffer to draw on
@@ -93,23 +105,23 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
                 BLUE,
                 2);
 
-        int max = 0, min = 0;   //Either using a max or a min based on what color tape we're looking at
+        int min = 0;  //Either using a max or a min based on what color tape we're looking at
 
-        if(color.equals("blue")){
+        if(color.equals("red")){
 
-            int maxOneTwo = Math.max(avg1, avg2);
-            max = Math.max(maxOneTwo, avg3);
+            int minOneTwo = Math.min(avg1R, avg2R);
+            min = Math.min(minOneTwo, avg3R);
 
         } else {
 
-            int minOneTwo = Math.min(avg1, avg2);
-            min = Math.min(minOneTwo, avg3);
+            int minOneTwo = Math.min(avg1B, avg2B);
+            min = Math.min(minOneTwo, avg3B);
 
         }
 
 
 
-        if(min == avg1 || max == avg1)
+        if(min == avg1B || min == avg1R)
         {
             
             //Give a value to position and highlight the rectangle that is being selected
@@ -122,7 +134,7 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
                     GREEN,
                     -1);
         }
-        else if(min == avg2 || max == avg2)
+        else if(min == avg2B || min == avg2R)
         {
             position = 1;
 
@@ -133,7 +145,7 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
                     GREEN,
                     -1);
         }
-        else if(min == avg3 || max == avg3)
+        else if(min == avg3B || min == avg3R)
         {
             position = 2;
 

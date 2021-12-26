@@ -30,7 +30,7 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
         Mat threshold = new Mat();
         Mat morphedThreshold = new Mat();
         Mat contoursOnPlainImage = new Mat();
-        ArrayList<MatOfPoint> cList = new ArrayList<MatOfPoint>();
+        ArrayList<Point> midpoints = new ArrayList<Point>();
 
 
         static final int CB_CHAN_MASK_THRESHOLD = 108;
@@ -95,7 +95,7 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
             if(contourList.size() != 0){
                 for(MatOfPoint contour : contourList){
-
+                    midpoints.clear();
                     analyzeContour(contour, input);
 
                 }
@@ -103,7 +103,7 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
 
 
-            return contoursOnPlainImage;
+            return input;
         }
 
 
@@ -149,13 +149,15 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
             Point[] points = contour.toArray();
             MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
 
-            Imgproc.circle(contoursOnPlainImage, findMidpoint(points), 5, BLUE, -1);
+            Point mid = findMidpoint(points);
+            midpoints.add(mid);
+            Imgproc.circle(contoursOnPlainImage, mid, 5, BLUE, -1);
 
             RotatedRect rotatedRectFitToContour = Imgproc.minAreaRect(contour2f);
-            drawRotatedRect(rotatedRectFitToContour, contoursOnPlainImage);
+            drawRotatedRect(rotatedRectFitToContour, input);
 
             //PAUSE HERE TO UNDERSTAND BETTER WHAT ROTATED RECTANGLE IS AND WHAT ITS COMPONENTS REPRESENT
-            double rotRectAngle = rotatedRectFitToContour.angle;
+            /*double rotRectAngle = rotatedRectFitToContour.angle;
             if(rotatedRectFitToContour.size.width < rotatedRectFitToContour.size.height){
                 rotRectAngle += 90;
             }
@@ -172,7 +174,7 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
                 } else {
                     belowMidline.add(p);
                 }
-            }
+            }*/
 
 
         }
@@ -209,6 +211,7 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
             }
         }
 
+        public ArrayList<Point> getMidpoints(){ return midpoints; }
 }
 
 
