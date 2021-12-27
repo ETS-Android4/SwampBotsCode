@@ -90,12 +90,13 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
         public Mat processFrame(Mat input){
             internalObjectList.clear();
+            midpoints.clear();
 
             ArrayList<MatOfPoint> contourList = findContours(input);
 
             if(contourList.size() != 0){
                 for(MatOfPoint contour : contourList){
-                    midpoints.clear();
+
                     analyzeContour(contour, input);
 
                 }

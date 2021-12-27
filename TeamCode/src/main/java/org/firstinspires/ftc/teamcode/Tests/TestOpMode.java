@@ -5,22 +5,31 @@ package org.firstinspires.ftc.teamcode.Tests;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 import org.firstinspires.ftc.teamcode.Camera.CSEDeterminationPipeline;
 import org.firstinspires.ftc.teamcode.Camera.ObjectOrientationAnalysisPipeline;
 import org.firstinspires.ftc.teamcode.Camera.Webcam;
+import org.opencv.core.Point;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 @Autonomous(name = "TestOpMode", group = "tests")
 public class TestOpMode extends LinearOpMode {
 
     Webcam webcam = new Webcam();
-    CSEDeterminationPipeline testPipeline = null;
+    ObjectOrientationAnalysisPipeline testPipeline = null;
+    ArrayList<Point> midpoints = new ArrayList<Point>();
 
+    @Override
     public void runOpMode() throws InterruptedException{
         webcam.init(hardwareMap);
-        testPipeline = new CSEDeterminationPipeline("blue");
+        testPipeline = new ObjectOrientationAnalysisPipeline();
+        webcam.camera.setPipeline(testPipeline);
+
 
         webcam.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -45,12 +54,9 @@ public class TestOpMode extends LinearOpMode {
 
         waitForStart();
         while(opModeIsActive()){
-            sleep(200);
-            webcam.camera.setPipeline(testPipeline);
-            while(time < 30){
-                telemetry.addData("Position", testPipeline.getAnalysis());
-                telemetry.update();
-            }
+            midpoints = testPipeline.getMidpoints();
+            telemetry.addData("Midpoints", midpoints);
+            telemetry.update();
 
         }
     }
