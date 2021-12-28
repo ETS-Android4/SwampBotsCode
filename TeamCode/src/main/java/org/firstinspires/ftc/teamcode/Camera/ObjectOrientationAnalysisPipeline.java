@@ -30,7 +30,7 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
         Mat threshold = new Mat();
         Mat morphedThreshold = new Mat();
         Mat contoursOnPlainImage = new Mat();
-        ArrayList<Point> midpoints = new ArrayList<Point>();
+        ArrayList<Point> midpoints = new ArrayList<>();
 
 
         static final int CB_CHAN_MASK_THRESHOLD = 108;
@@ -153,41 +153,7 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
             Point mid = findMidpoint(points);
             midpoints.add(mid);
             Imgproc.circle(contoursOnPlainImage, mid, 5, BLUE, -1);
-
-            RotatedRect rotatedRectFitToContour = Imgproc.minAreaRect(contour2f);
-            drawRotatedRect(rotatedRectFitToContour, input);
-
-            //PAUSE HERE TO UNDERSTAND BETTER WHAT ROTATED RECTANGLE IS AND WHAT ITS COMPONENTS REPRESENT
-            /*double rotRectAngle = rotatedRectFitToContour.angle;
-            if(rotatedRectFitToContour.size.width < rotatedRectFitToContour.size.height){
-                rotRectAngle += 90;
-            }
-
-            double midlineSlope = Math.tan(Math.toRadians(rotRectAngle));
-
-            ArrayList<Point> aboveMidline = new ArrayList<Point>(points.length/2);
-            ArrayList<Point> belowMidline = new ArrayList<Point>(points.length/2);
-
-            //TRY TO UNDERSTAND THE MATH UNDERLYING THE SPLIT OF POINTS HERE
-            for(Point p : points){
-                if(rotatedRectFitToContour.center.y - p.y > midlineSlope * (rotatedRectFitToContour.center.x - p.x)){
-                    aboveMidline.add(p);
-                } else {
-                    belowMidline.add(p);
-                }
-            }*/
-
-
         }
-
-
-        static ContourRegionAnalysis analyzeContourRegion(ArrayList<Point> contourPoints){
-            MatOfPoint matOfPoint = new MatOfPoint();
-            matOfPoint.fromList(contourPoints);
-            List<MatOfPoint> listHolderOfMatOfPoint = Arrays.asList(matOfPoint);
-            return null;
-        }
-
 
         public Point findMidpoint(Point[] p){
             int xSum = 0, ySum = 0;

@@ -22,7 +22,7 @@ public class TestOpMode extends LinearOpMode {
 
     Webcam webcam = new Webcam();
     ObjectOrientationAnalysisPipeline testPipeline = null;
-    ArrayList<Point> midpoints = new ArrayList<Point>();
+    ArrayList<Point> midpoints = new ArrayList<>();
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -52,8 +52,13 @@ public class TestOpMode extends LinearOpMode {
             }
         });
 
+        telemetry.setMsTransmissionInterval(20);
+
         waitForStart();
         while(opModeIsActive()){
+
+            sleep(20);
+            
             midpoints = testPipeline.getMidpoints();
             telemetry.addData("Midpoints", midpoints);
             telemetry.update();
