@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Tests;
 
-
+import org.firstinspires.ftc.teamcode.HardwareFunctionality.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -20,15 +20,19 @@ import java.util.ArrayList;
 @Autonomous(name = "TestOpMode", group = "tests")
 public class TestOpMode extends LinearOpMode {
 
+    Robot robot = new Robot();
     Webcam webcam = new Webcam();
+    Movement moves = new Movement();
     ObjectOrientationAnalysisPipeline testPipeline = null;
-    ArrayList<Point> midpoints = new ArrayList<>();
 
     @Override
     public void runOpMode() throws InterruptedException{
+        robot.init(hardwareMap);
         webcam.init(hardwareMap);
         testPipeline = new ObjectOrientationAnalysisPipeline();
         webcam.camera.setPipeline(testPipeline);
+
+        Point midpoint = new Point();
 
 
         webcam.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -54,15 +58,28 @@ public class TestOpMode extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(20);
 
+
+        //TEST STRAFE DIRECTION FIRST BEFORE TRYING THE MIDPOINT MOVEMENT
+
+
         waitForStart();
         while(opModeIsActive()){
 
-            sleep(20);
-            
-            midpoints = testPipeline.getMidpoints();
-            telemetry.addData("Midpoints", midpoints);
-            telemetry.update();
+            sleep(5000);
 
+            midpoint = testPipeline.getMidpoints().get(0);
+            int xError = moves.isBlockInXRegion(midpoint.x);
+
+            if(xError > 0){
+                while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
+                    moves.linearMove(0.5, 1, -1, -1, 1);
+                }
+            }
+            else if(xError < 0){
+                while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
+                    moves.linearMove(0.5, -1, 1, 1, -1);
+                }
+            }
         }
     }
 

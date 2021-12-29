@@ -25,7 +25,7 @@ public class LeftBlueAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
 
         //Initialize hardware and other objects
-        robot.init(hardwareMap, "auto");
+        robot.init(hardwareMap);
         webcam.init(hardwareMap);
         csePipeline = new CSEDeterminationPipeline("blue");
         
@@ -99,8 +99,8 @@ public class LeftBlueAuto extends LinearOpMode {
 
                 FORWARD -- All 1's
                 BACKWARD -- All -1's
-                RIGHT -- -1, 1, 1, -1
-                LEFT -- 1, -1, -1, 1
+                RIGHT -- 1, -1, -1, 1
+                LEFT -- -1, 1, 1, -1
                 CCW TURN -- -1, 1, -1, 1
                 CW TURN -- 1, -1, 1, -1
 
@@ -110,48 +110,48 @@ public class LeftBlueAuto extends LinearOpMode {
             //Move arm out of way for camera to see the CSE, HOPEFULLY DELETE SOON
             robot.grabBlock();
             sleep(100);
-            moves.linearMove(5, -1, -1, -1, -1);
+            moves.linearMoveDistance(5, -1, -1, -1, -1);
             sleep(100);
             moves.rotateArm(110);
             sleep(100);
-            moves.linearMove(4,1,1,1,1);
+            moves.linearMoveDistance(4,1,1,1,1);
 
             
             //Strafe and rotate to point shipping hub
-            moves.linearMove(3, -1, -1, -1, -1);
+            moves.linearMoveDistance(3, -1, -1, -1, -1);
             sleep(100);
-            moves.linearMove(3,1,-1,-1,1);
+            moves.linearMoveDistance(3,1,-1,-1,1);
             sleep(100);
-            moves.linearMove(9, 1, -1, 1, -1);
+            moves.linearMoveDistance(9, 1, -1, 1, -1);
             sleep(100);
 
             //Movements specific to the level we are delivering the block to on shipping hub
             if (CSEPosition == 0){
                 moves.rotateArm(90);
                 sleep(100);
-                moves.linearMove(21,-1,-1,-1,-1);
+                moves.linearMoveDistance(21,-1,-1,-1,-1);
 
 
             } else if (CSEPosition == 1){
                 moves.rotateArm(60);
                 sleep(300);
-                moves.linearMove(22, -1, -1, -1, -1);
+                moves.linearMoveDistance(22, -1, -1, -1, -1);
 
             } else {
                 moves.rotateArm(50);
                 sleep(100);
-                moves.linearMove(24, -1, -1, -1, -1);
+                moves.linearMoveDistance(24, -1, -1, -1, -1);
 
             }
 
             //Movements for parking
             robot.releaseBlock();
             sleep(100);
-            moves.linearMove(10,1,1,1,1);
+            moves.linearMoveDistance(10,1,1,1,1);
             sleep(100);
-            moves.linearMove(10,1,-1,1,-1);
+            moves.linearMoveDistance(10,1,-1,1,-1);
             sleep(100);
-            moves.linearMove(45,1,1,1,1);
+            moves.linearMoveDistance(45,1,1,1,1);
             sleep(100);
             moves.rotateArm(-180);
 

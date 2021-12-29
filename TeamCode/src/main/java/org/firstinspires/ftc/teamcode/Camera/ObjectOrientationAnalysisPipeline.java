@@ -156,17 +156,17 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
         }
 
         public Point findMidpoint(Point[] p){
-            int xSum = 0, ySum = 0;
+            double xSum = 0, ySum = 0;
             int numPoints = 0;
 
             numPoints += p.length;
 
             for(Point point : p) {
-                xSum += (int) point.x;
-                ySum += (int) point.y;
+                xSum += point.x;
+                ySum += point.y;
             }
 
-            return new Point((int)xSum/numPoints, (int)ySum/numPoints);
+            return new Point(Math.round(xSum/numPoints), Math.round(ySum/numPoints));
         }
 
         public void drawRotatedRect(RotatedRect rectangle, Mat image){
@@ -177,6 +177,7 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
                 Imgproc.line(image, corners[i], corners[(i+1)%4], RED, 2);
             }
         }
+
 
         public ArrayList<Point> getMidpoints(){ return midpoints; }
 }

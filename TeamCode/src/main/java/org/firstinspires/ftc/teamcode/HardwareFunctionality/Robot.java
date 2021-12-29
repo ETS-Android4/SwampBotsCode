@@ -40,7 +40,7 @@ public class Robot {
 
     }
 
-    public void init(HardwareMap h, String mode){
+    public void init(HardwareMap h){
         hw = h;
 
         //Initialize hardware
@@ -132,4 +132,6 @@ public class Robot {
         leftHand.setPosition(0.75);
         rightHand.setPosition(0.44);
     }
+
+
 }

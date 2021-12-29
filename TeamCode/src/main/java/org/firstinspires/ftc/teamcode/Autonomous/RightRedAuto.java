@@ -24,7 +24,7 @@ public class RightRedAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         //Defines motors and direction
-        robot.init(hardwareMap, "auto");
+        robot.init(hardwareMap);
         webcam.init(hardwareMap);
         csePipeline = new CSEDeterminationPipeline("red");
 
@@ -100,46 +100,46 @@ public class RightRedAuto extends LinearOpMode {
              */
             robot.grabBlock();
             sleep(100);
-            moves.linearMove(5, -1, -1, -1, -1);
+            moves.linearMoveDistance(5, -1, -1, -1, -1);
             sleep(100);
             moves.rotateArm(110);
             sleep(100);
-            moves.linearMove(4, 1, 1, 1, 1);
+            moves.linearMoveDistance(4, 1, 1, 1, 1);
 
 
-            moves.linearMove(3, -1, -1, -1, -1);
+            moves.linearMoveDistance(3, -1, -1, -1, -1);
             sleep(100);
-            moves.linearMove(3, -1, 1, 1, -1);
+            moves.linearMoveDistance(3, -1, 1, 1, -1);
             sleep(100);
-            moves.linearMove(9, -1, 1, -1, 1);
+            moves.linearMoveDistance(9, -1, 1, -1, 1);
             sleep(100);
 
             if (CSEPosition == 0) {
                 moves.rotateArm(90);
                 sleep(100);
-                moves.linearMove(21, -1, -1, -1, -1);
+                moves.linearMoveDistance(21, -1, -1, -1, -1);
 
 
             } else if (CSEPosition == 1) {
                 moves.rotateArm(60);
                 sleep(300);
-                moves.linearMove(22, -1, -1, -1, -1);
+                moves.linearMoveDistance(22, -1, -1, -1, -1);
 
             } else {
                 moves.rotateArm(50);
                 sleep(100);
-                moves.linearMove(24, -1, -1, -1, -1);
+                moves.linearMoveDistance(24, -1, -1, -1, -1);
 
             }
 
             robot.releaseBlock();
             telemetry.update();
             sleep(100);
-            moves.linearMove(11, 1, 1, 1, 1);
+            moves.linearMoveDistance(11, 1, 1, 1, 1);
             sleep(100);
-            moves.linearMove(7, -1, 1, -1, 1);
+            moves.linearMoveDistance(7, -1, 1, -1, 1);
             sleep(100);
-            moves.linearMove(45, 1, 1, 1, 1);
+            moves.linearMoveDistance(45, 1, 1, 1, 1);
             sleep(100);
             moves.rotateArm(-180);
 

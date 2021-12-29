@@ -16,7 +16,7 @@ public class FirstBasicMovement extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
 
         //Set up motors and initialization
-        robot.init(hardwareMap, "teleop");
+        robot.init(hardwareMap);
 
         //Setting Initial Servo Positions
         robot.leftHand.setPosition(0.75);

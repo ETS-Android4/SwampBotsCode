@@ -6,6 +6,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENC
 
 import org.firstinspires.ftc.teamcode.Camera.*;
 import org.firstinspires.ftc.teamcode.Autonomous.*;
+import org.opencv.core.Point;
 
 public class Movement {
 
@@ -20,12 +21,15 @@ public class Movement {
 
     static final double TICKS_PER_MOTOR_HEX = 288.0;
     static final double TICKS_PER_DEGREE_HEX = TICKS_PER_MOTOR_HEX / 360.0;
+
+    static final int RIGHT_REGION_SIDE_COORDINATE = 480;
+    static final int LEFT_REGION_SIDE_COORDINATE = 880;
     
     
     
     //For movement forward, backward, pivoting, and strafing. SOON YOU HAVE TO GET NEW METHODS FOR PIVOTING AND STRAFING
     
-    public void linearMove(int inches, int flSign, int frSign, int blSign, int brSign){
+    public void linearMoveDistance(int inches, int flSign, int frSign, int blSign, int brSign){
         robot.setWheelEncoderMode(STOP_AND_RESET_ENCODER);
 
         int targetPosition = robot.frontLeft.getCurrentPosition() + (int)(inches * TICKS_PER_INCH_REV);
@@ -46,6 +50,12 @@ public class Movement {
         robot.setWheelEncoderMode(RUN_USING_ENCODER);
     }
 
+    public void linearMove(double power, int flSign, int frSign, int blSign, int brSign){
+        robot.frontLeft.setPower(power * flSign);
+        robot.frontRight.setPower(power * frSign);
+        robot.backLeft.setPower(power * blSign);
+        robot.backRight.setPower(power * brSign);
+    }
     
     //Method for rotation of arm with encoders 
     
@@ -65,5 +75,19 @@ public class Movement {
 
         robot.setArmPower(0);
         robot.setArmEncoderMode(RUN_USING_ENCODER);
+    }
+
+
+
+    public int isBlockInXRegion(double x){
+        if(x < RIGHT_REGION_SIDE_COORDINATE){
+            return RIGHT_REGION_SIDE_COORDINATE - (int)x;
+        } else if(x > LEFT_REGION_SIDE_COORDINATE){
+            return LEFT_REGION_SIDE_COORDINATE - (int)x;
+        } else {
+            return 0;
+        }
+
+
     }
 }
