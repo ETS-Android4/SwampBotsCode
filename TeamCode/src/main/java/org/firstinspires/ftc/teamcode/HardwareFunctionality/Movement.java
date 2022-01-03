@@ -24,6 +24,8 @@ public class Movement {
 
     static final int RIGHT_REGION_SIDE_COORDINATE = 480;
     static final int LEFT_REGION_SIDE_COORDINATE = 880;
+    static final int TOP_REGION_SIDE_COORDINATE = 400;
+    static final int BOTTOM_REGION_SIDE_COORDINATE = 200;
     
     
     
@@ -87,7 +89,15 @@ public class Movement {
         } else {
             return 0;
         }
+    }
 
-
+    public int isBlockInYRegion(double y){
+        if(y < BOTTOM_REGION_SIDE_COORDINATE){
+            return BOTTOM_REGION_SIDE_COORDINATE - (int)y;
+        } else if(y > TOP_REGION_SIDE_COORDINATE){
+            return TOP_REGION_SIDE_COORDINATE - (int)y;
+        } else {
+            return 0;
+        }
     }
 }

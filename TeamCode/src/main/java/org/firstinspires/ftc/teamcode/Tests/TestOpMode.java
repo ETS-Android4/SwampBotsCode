@@ -32,7 +32,7 @@ public class TestOpMode extends LinearOpMode {
         testPipeline = new ObjectOrientationAnalysisPipeline();
         webcam.camera.setPipeline(testPipeline);
 
-        Point midpoint = new Point();
+        Point midpoint;
 
 
         webcam.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -78,6 +78,20 @@ public class TestOpMode extends LinearOpMode {
             else if(xError < 0){
                 while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
                     moves.linearMove(0.5, -1, 1, 1, -1);
+                }
+            }
+
+            midpoint = testPipeline.getMidpoints().get(0);
+            int yError = moves.isBlockInYRegion(midpoint.y);
+
+            if(yError > 0){
+                while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
+                    moves.linearMove(0.5, 1, 1, 1, 1);
+                }
+            }
+            else if(xError < 0){
+                while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
+                    moves.linearMove(0.5, -1, -1, -1, -1);
                 }
             }
         }
