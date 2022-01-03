@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Camera;
 
+import android.provider.ContactsContract;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -33,7 +35,7 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
         ArrayList<Point> midpoints = new ArrayList<>();
 
 
-        static final int CB_CHAN_MASK_THRESHOLD = 108;
+        static final int CB_CHAN_MASK_THRESHOLD = 110;
         static final double DENSITY_UPRIGHT_THRESHOLD = 0.03;
 
         //Used in morphing mask
@@ -89,9 +91,8 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
 
         public Mat processFrame(Mat input){
-            internalObjectList.clear();
-            midpoints.clear();
 
+            midpoints.clear();
             ArrayList<MatOfPoint> contourList = findContours(input);
 
             if(contourList.size() != 0){
@@ -102,9 +103,10 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
                 }
             }
 
+            Imgproc.line(input, new Point(480,0),new Point(480, 720), BLUE, 3);
+            Imgproc.line(input, new Point(880, 0), new Point(880,720), BLUE, 3);
 
-
-            return input;
+            return contoursOnPlainImage;
         }
 
 

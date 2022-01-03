@@ -23,7 +23,7 @@ public class Gyro extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException{
-        robot.init(hardwareMap, "auto");
+        robot.init(hardwareMap);
 
         imu = hardwareMap.get(BNO055IMU.class, "imu1");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();

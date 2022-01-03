@@ -56,7 +56,7 @@ public class TestOpMode extends LinearOpMode {
             }
         });
 
-        telemetry.setMsTransmissionInterval(20);
+
 
 
         //TEST STRAFE DIRECTION FIRST BEFORE TRYING THE MIDPOINT MOVEMENT
@@ -65,35 +65,42 @@ public class TestOpMode extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()){
 
-            sleep(5000);
+                sleep(3000);
+                webcam.camera.setPipeline(testPipeline);
+                midpoint = testPipeline.getMidpoints().get(0);
 
-            midpoint = testPipeline.getMidpoints().get(0);
-            int xError = moves.isBlockInXRegion(midpoint.x);
 
-            if(xError > 0){
-                while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
-                    moves.linearMove(0.5, 1, -1, -1, 1);
-                }
-            }
-            else if(xError < 0){
-                while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
-                    moves.linearMove(0.5, -1, 1, 1, -1);
-                }
-            }
+                int xError = moves.isBlockInXRegion(midpoint.x);
 
-            midpoint = testPipeline.getMidpoints().get(0);
-            int yError = moves.isBlockInYRegion(midpoint.y);
+                if(xError > 0){
+                    while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
+                        moves.linearMove(robot,0.3, -1, 1, 1, -1);
+                        webcam.camera.setPipeline(testPipeline);
+                    }
+                    robot.setAllWheelPower(0);
+                }
+                else if(xError < 0){
+                    while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
+                        moves.linearMove(robot,0.3, 1, -1, -1, 1);
+                        webcam.camera.setPipeline(testPipeline);
+                    }
+                    robot.setAllWheelPower(0);
+                }
 
-            if(yError > 0){
-                while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
-                    moves.linearMove(0.5, 1, 1, 1, 1);
+                /*midpoint = testPipeline.getMidpoints().get(0);
+                int yError = moves.isBlockInYRegion(midpoint.y);
+
+                if(yError > 0){
+                    while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
+                        moves.linearMove(robot,0.5, 1, 1, 1, 1);
+                    }
                 }
-            }
-            else if(xError < 0){
-                while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
-                    moves.linearMove(0.5, -1, -1, -1, -1);
-                }
-            }
+                else if(xError < 0){
+                    while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
+                        moves.linearMove(robot,0.5, -1, -1, -1, -1);
+                    }
+                }*/
+
         }
     }
 

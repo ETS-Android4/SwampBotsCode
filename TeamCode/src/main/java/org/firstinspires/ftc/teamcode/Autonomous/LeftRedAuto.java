@@ -100,53 +100,6 @@ public class LeftRedAuto extends LinearOpMode {
 
                 24 INCHES = 90 DEGREE TURN WHEEl
              */
-            robot.grabBlock();
-            sleep(100);
-            moves.linearMoveDistance(5, -1, -1, -1, -1);
-            sleep(100);
-            moves.rotateArm(110);
-            sleep(100);
-            moves.linearMoveDistance(4,1,1,1,1);
-
-
-            moves.linearMoveDistance(3, -1, -1, -1, -1);
-            sleep(100);
-
-            moves.linearMoveDistance(7, 1, -1, 1, -1);
-            sleep(100);
-
-            if (CSEPosition == 0){
-                moves.rotateArm(90);
-                sleep(100);
-                moves.linearMoveDistance(21,-1,-1,-1,-1);
-
-
-            } else if (CSEPosition == 1){
-                moves.rotateArm(60);
-                sleep(300);
-                moves.linearMoveDistance(22, -1, -1, -1, -1);
-
-            } else {
-                moves.rotateArm(50);
-                sleep(100);
-                moves.linearMoveDistance(24, -1, -1, -1, -1);
-
-            }
-
-            robot.releaseBlock();
-            sleep(100);
-            moves.linearMoveDistance(11,1,1,1,1);
-            sleep(100);
-            moves.linearMoveDistance(9,1,-1,1,-1);
-            sleep(100);
-            moves.linearMoveDistance(25,1,1,1,1);
-            sleep(100);
-            moves.linearMoveDistance(17,-1,1,1,-1);
-            sleep(100);
-            moves.linearMoveDistance(4,1,1,1,1);
-            sleep(100);
-            moves.rotateArm(-120);
-            sleep(100);
 
 
             telemetry.update();

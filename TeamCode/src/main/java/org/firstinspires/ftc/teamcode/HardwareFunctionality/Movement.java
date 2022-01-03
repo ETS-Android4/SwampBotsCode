@@ -9,9 +9,6 @@ import org.firstinspires.ftc.teamcode.Autonomous.*;
 import org.opencv.core.Point;
 
 public class Movement {
-
-    Robot robot = new Robot();
-
     
     //CONSTANTS FOR ENCODER TICK VALUES
     
@@ -31,15 +28,15 @@ public class Movement {
     
     //For movement forward, backward, pivoting, and strafing. SOON YOU HAVE TO GET NEW METHODS FOR PIVOTING AND STRAFING
     
-    public void linearMoveDistance(int inches, int flSign, int frSign, int blSign, int brSign){
+    public void linearMoveDistance(Robot robot, int inches, double flSign, double frSign, double blSign, double brSign){
         robot.setWheelEncoderMode(STOP_AND_RESET_ENCODER);
 
         int targetPosition = robot.frontLeft.getCurrentPosition() + (int)(inches * TICKS_PER_INCH_REV);
 
-        robot.frontLeft.setTargetPosition(flSign * targetPosition);
-        robot.frontRight.setTargetPosition(frSign * targetPosition);
-        robot.backLeft.setTargetPosition(blSign * targetPosition);
-        robot.backRight.setTargetPosition(brSign * targetPosition);
+        robot.frontLeft.setTargetPosition((int)(flSign * targetPosition));
+        robot.frontRight.setTargetPosition((int)(frSign * targetPosition));
+        robot.backLeft.setTargetPosition((int)(blSign * targetPosition));
+        robot.backRight.setTargetPosition((int)(brSign * targetPosition));
 
         robot.setWheelEncoderMode(RUN_TO_POSITION);
         robot.setAllWheelPower(0.5);
@@ -52,7 +49,7 @@ public class Movement {
         robot.setWheelEncoderMode(RUN_USING_ENCODER);
     }
 
-    public void linearMove(double power, int flSign, int frSign, int blSign, int brSign){
+    public void linearMove(Robot robot, double power, int flSign, int frSign, int blSign, int brSign){
         robot.frontLeft.setPower(power * flSign);
         robot.frontRight.setPower(power * frSign);
         robot.backLeft.setPower(power * blSign);
@@ -61,7 +58,7 @@ public class Movement {
     
     //Method for rotation of arm with encoders 
     
-    public void rotateArm(int degrees){
+    public void rotateArm(Robot robot, int degrees){
         robot.setArmEncoderMode(STOP_AND_RESET_ENCODER);
 
         int targetAngle = robot.leftArm.getCurrentPosition() + (int)(-(degrees - 12) * TICKS_PER_DEGREE_HEX);
