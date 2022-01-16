@@ -29,8 +29,7 @@ public class RightBlueAuto extends LinearOpMode {
         csePipeline = new CSEDeterminationPipeline("blue");
 
         webcam.camera.setPipeline(csePipeline);
-        sleep(3000);
-        CSEPosition = csePipeline.getAnalysis();
+
 
 
         webcam.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -65,43 +64,85 @@ public class RightBlueAuto extends LinearOpMode {
         while (opModeIsActive() && counter == 0){
 
 
-            /*if (colorSensor instanceof SwitchableLight) {
-                ((SwitchableLight)colorSensor).enableLight(true);
+            robot.grabBlock();
+            sleep(500);
+
+            moves.linearMoveDistance(robot, 7, -1, -1, -1, -1);
+            sleep(100);
+            moves.linearMoveDistance(robot, 36, 1, -1, 1, -1);
+            sleep(100);
+            moves.linearMoveDistanceHalfInch(robot, 1, -1, 1, -1);
+            sleep(100);
+
+            webcam.camera.setPipeline(csePipeline);
+            sleep(200);
+            CSEPosition = csePipeline.getAnalysis();
+            telemetry.addData("Position", CSEPosition);
+            telemetry.update();
+
+            moves.linearMoveDistance(robot, 29, 1, 1, 1, 1);
+            sleep(100);
+            moves.linearMoveDistance(robot, 19, 1, -1, 1, -1);
+            sleep(100);
+            moves.rotateArm(robot, 120);
+            sleep(300);
+
+            if(CSEPosition == 2){
+
+                moves.linearMoveDistance(robot, 3, -1, -1, -1, -1);
+                sleep(100);
+                moves.rotateArm(robot, 45);
+                robot.releaseBlock();
+                sleep(100);
+                moves.rotateArm(robot, -45);
+                moves.linearMoveDistance(robot, 18, 1, -1, 1, -1);
+                sleep(100);
+                moves.linearMoveDistance(robot, 32, -1, 1, 1, -1);
+
+
+            } else if(CSEPosition == 1){
+
+                moves.linearMoveDistance(robot, 6, 1, 1, 1, 1);
+                moves.rotateArm(robot, 60);
+                moves.linearMoveDistance(robot, 6, -1, -1, -1, -1);
+                robot.releaseBlock();
+
+                moves.linearMoveDistance(robot, 6, 1, 1, 1, 1);
+                moves.linearMoveDistance(robot, 18, 1,-1, 1, -1);
+
+                moves.linearMoveDistance(robot, 20, -1, 1, 1, -1);
+                moves.rotateArm(robot, -90);
+
+            } else if(CSEPosition == 0) {
+
+                moves.linearMoveDistance(robot, 6, 1, 1, 1, 1);
+                moves.rotateArm(robot, 80);
+                sleep(200);
+                moves.linearMoveDistance(robot, 6, -1, -1, -1, -1);
+                robot.releaseBlock();
+
+                moves.linearMoveDistance(robot, 6, 1, 1, 1, 1);
+                moves.linearMoveDistance(robot, 18, 1,-1, 1, -1);
+
+                moves.linearMoveDistance(robot, 21, -1, 1, 1, -1);
+                moves.rotateArm(robot, -110);
+                sleep(200);
+
             }
 
-            colorSensor.setGain(5);
-            final float[] hsvValues = new float[3];
+            sleep(100);
+            moves.linearMoveDistance(robot, 31, 1, 1,1, 1);
+            moves.linearMoveDistanceHalfInch(robot, 1, 1, 1, 1);
 
-            NormalizedRGBA colors = colorSensor.getNormalizedColors();
+            double time = getRuntime();
+            while(getRuntime() < time + 4){
+                robot.carousel.setPower(-0.8);
+            }
+            robot.carousel.setPower(0);
 
-            Color.colorToHSV(colors.toColor(), hsvValues);
+            moves.linearMoveDistance(robot, 20, -1, -1, -1, -1);
 
-
-            telemetry.addData("Path0",  "Starting at %7d ",
-                    frontRight.getCurrentPosition());
-            telemetry.addLine()
-                    .addData("Red", "%.3f", colors.red)
-                    .addData("Green", "%.3f", colors.green)
-                    .addData("Blue", "%.3f", colors.blue);
-            telemetry.addLine()
-                    .addData("Hue", "%.3f", hsvValues[0])
-                    .addData("Saturation", "%.3f", hsvValues[1])
-                    .addData("Value", "%.3f", hsvValues[2]);
-            telemetry.addData("Alpha", "%.3f", colors.alpha);
-            telemetry.update();*/
-
-            /* KEY FOR LINEAR MOVES
-
-                FORWARD -- All 1's
-                BACKWARD -- All -1's
-                RIGHT -- -1, 1, 1, -1
-                LEFT -- 1, -1, -1, 1
-                CCW TURN -- -1, 1, -1, 1
-                CW TURN -- 1, -1, 1, -1
-
-                24 INCHES = 90 DEGREE TURN WHEEl
-             */
-
+            sleep(3000);
             counter++;
         }
     }

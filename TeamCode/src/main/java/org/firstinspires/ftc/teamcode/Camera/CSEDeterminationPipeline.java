@@ -18,12 +18,12 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     static final Scalar GREEN = new Scalar(0, 255, 0);
 
     //Tested points for where the regions should be on the frame. Adjust if camera is off
-    static final Point REGION1_TOP_LEFT_ANCHOR_POINT = new Point(65, 380);
-    static final Point REGION2_TOP_LEFT_ANCHOR_POINT = new Point(620, 410);
-    static final Point REGION3_TOP_LEFT_ANCHOR_POINT = new Point(1075, 440);
+    static final Point REGION1_TOP_LEFT_ANCHOR_POINT = new Point(175, 430);
+    static final Point REGION2_TOP_LEFT_ANCHOR_POINT = new Point(1000, 430);
 
-    static final int REGION_WIDTH = 200;
-    static final int REGION_HEIGHT = 200;
+
+    static final int REGION_WIDTH = 250;
+    static final int REGION_HEIGHT = 150;
     
     
     //Create points for corners of rectangles
@@ -33,17 +33,14 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     Point region2_PointA = new Point(REGION2_TOP_LEFT_ANCHOR_POINT.x, REGION2_TOP_LEFT_ANCHOR_POINT.y);
     Point region2_PointB = new Point(REGION2_TOP_LEFT_ANCHOR_POINT.x + REGION_WIDTH, REGION2_TOP_LEFT_ANCHOR_POINT.y + REGION_HEIGHT);
 
-    Point region3_PointA = new Point(REGION3_TOP_LEFT_ANCHOR_POINT.x, REGION3_TOP_LEFT_ANCHOR_POINT.y);
-    Point region3_PointB = new Point(REGION3_TOP_LEFT_ANCHOR_POINT.x + REGION_WIDTH, REGION3_TOP_LEFT_ANCHOR_POINT.y + REGION_HEIGHT);
 
-
-    Mat region1_Cb, region2_Cb, region3_Cb;   //Mats for cb of each region
-    Mat region1_Cr, region2_Cr, region3_Cr;
+    Mat region1_Cb, region2_Cb;   //Mats for cb of each region
+    Mat region1_Cr, region2_Cr;
     Mat YCrCb = new Mat();
     Mat Cr = new Mat();
     Mat Cb = new Mat();
-    int avg1B, avg2B, avg3B;    //cb values
-    int avg1R, avg2R, avg3R;
+    int avg1B, avg2B;    //cb values
+    int avg1R, avg2R;
 
     int position;  //cse position. Either 0,1,2
 
@@ -66,11 +63,9 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
 
         region1_Cb = Cb.submat(new Rect(region1_PointA, region1_PointB));
         region2_Cb = Cb.submat(new Rect(region2_PointA, region2_PointB));
-        region3_Cb = Cb.submat(new Rect(region3_PointA, region3_PointB));
 
         region1_Cr = Cr.submat(new Rect(region1_PointA, region1_PointB));
         region2_Cr = Cr.submat(new Rect(region2_PointA, region2_PointB));
-        region3_Cr = Cr.submat(new Rect(region3_PointA, region3_PointB));
     }
 
     public Mat processFrame(Mat input){
@@ -78,11 +73,9 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
 
         avg1B = (int) Core.mean(region1_Cb).val[0];
         avg2B = (int) Core.mean(region2_Cb).val[0];
-        avg3B = (int) Core.mean(region3_Cb).val[0];
 
         avg1R = (int) Core.mean(region1_Cr).val[0];
         avg2R = (int) Core.mean(region2_Cr).val[0];
-        avg3R = (int) Core.mean(region3_Cr).val[0];
 
         Imgproc.rectangle(
                 input, // Buffer to draw on
@@ -98,24 +91,24 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
                 BLUE,
                 2);
 
-        Imgproc.rectangle(
-                input,
-                region3_PointA,
-                region3_PointB,
-                BLUE,
-                2);
 
         int min = 0;  //Either using a max or a min based on what color tape we're looking at
 
         if(color.equals("red")){
 
-            int minOneTwo = Math.min(avg1R, avg2R);
-            min = Math.min(minOneTwo, avg3R);
+            if(avg1R < 130){
+                min = avg1R;
+            } else if(avg2R < 130){
+                min = avg2R;
+            }
 
         } else {
 
-            int minOneTwo = Math.min(avg1B, avg2B);
-            min = Math.min(minOneTwo, avg3B);
+            if(avg1B < 130){
+                min = avg1B;
+            } else if(avg2B < 130){
+                min = avg2B;
+            }
 
         }
 
@@ -145,17 +138,10 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
                     GREEN,
                     -1);
         }
-        else if(min == avg3B || min == avg3R)
-        {
+        else if(min == 0){
             position = 2;
-
-            Imgproc.rectangle(
-                    input,
-                    region3_PointA,
-                    region3_PointB,
-                    GREEN,
-                    -1);
         }
+
 
         return input;
     }
@@ -163,6 +149,14 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     //Function used to give opmode the information about position
     public int getAnalysis(){
         return position;
+    }
+
+    public int getAvg1R(){
+        return avg1R;
+    }
+
+    public int getAvg2R(){
+        return avg2R;
     }
 
 }

@@ -26,7 +26,7 @@ public class Robot {
     public DcMotor leftArm = null;
     public DcMotor rightArm = null;
 
-    public DcMotorEx carousel = null;
+    public DcMotor carousel = null;
 
     public Servo leftHand = null;
     public Servo rightHand = null;

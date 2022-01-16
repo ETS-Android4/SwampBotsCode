@@ -29,8 +29,8 @@ public class LeftRedAuto extends LinearOpMode {
         csePipeline = new CSEDeterminationPipeline("red");
 
         webcam.camera.setPipeline(csePipeline);
-        sleep(3000);
-        CSEPosition = csePipeline.getAnalysis();
+
+
 
         webcam.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -51,6 +51,7 @@ public class LeftRedAuto extends LinearOpMode {
                  */
             }
         });
+
 
         //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
@@ -102,10 +103,82 @@ public class LeftRedAuto extends LinearOpMode {
              */
 
 
+            robot.grabBlock();
+            sleep(500);
+
+            moves.linearMoveDistance(robot, 7, -1, -1, -1, -1);
+            moves.linearMoveDistance(robot, 36, 1, -1, 1, -1);
+            moves.linearMoveDistanceHalfInch(robot, 1, -1, 1, -1);
+            sleep(100);
+
+            webcam.camera.setPipeline(csePipeline);
+            sleep(200);
+            CSEPosition = csePipeline.getAnalysis();
+            telemetry.addData("Position", CSEPosition);
             telemetry.update();
 
+            moves.linearMoveDistanceHalfInch(robot, 1, -1, 1, -1);
+            moves.linearMoveDistance(robot, 29, 1, 1, 1, 1);
+            moves.linearMoveDistance(robot, 18, -1, 1, -1, 1);
 
 
+            moves.rotateArm(robot, 120);
+            sleep(300);
+
+            if(CSEPosition == 2){
+
+                moves.linearMoveDistance(robot, 4, -1, -1, -1, -1);
+                moves.rotateArm(robot, 60);
+                robot.releaseBlock();
+                moves.rotateArm(robot, -45);
+
+                moves.linearMoveDistance(robot, 28, 1, 1, 1, 1);
+
+
+
+            } else if(CSEPosition == 1){
+
+                moves.linearMoveDistance(robot, 6, 1, 1, 1, 1);
+                moves.rotateArm(robot, 60);
+                moves.linearMoveDistance(robot, 6, -1, -1, -1, -1);
+                robot.releaseBlock();
+                sleep(100);
+
+                moves.linearMoveDistance(robot, 6, 1, 1, 1, 1);
+                moves.rotateArm(robot, -78);
+                sleep(300);
+                moves.linearMoveDistance(robot, 19, 1,1, 1, 1);
+
+
+            } else if(CSEPosition == 0) {
+
+                moves.linearMoveDistance(robot, 6, 1, 1, 1, 1);
+                moves.rotateArm(robot, 77);
+                moves.linearMoveDistance(robot, 8, -1, -1, -1, -1);
+                robot.releaseBlock();
+                sleep(100);
+
+                moves.linearMoveDistance(robot, 8, 1, 1, 1, 1);
+                moves.rotateArm(robot, -105);
+                sleep(300);
+                moves.linearMoveDistance(robot, 18, 1,1, 1, 1);
+
+
+
+
+            }
+
+            moves.linearMoveDistance(robot, 33, -1, 1, 1, -1);
+            moves.linearMoveDistanceHalfInch(robot, -1, 1, 1, -1);
+
+
+            double time = getRuntime();
+            while(getRuntime() < time + 4){
+                robot.carousel.setPower(0.8);
+            }
+            robot.carousel.setPower(0);
+
+            moves.linearMoveDistance(robot, 22, 1, -1, -1, 1);
             counter++;
         }
     }

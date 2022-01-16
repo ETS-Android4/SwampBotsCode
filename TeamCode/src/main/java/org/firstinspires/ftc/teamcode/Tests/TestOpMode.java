@@ -23,13 +23,13 @@ public class TestOpMode extends LinearOpMode {
     Robot robot = new Robot();
     Webcam webcam = new Webcam();
     Movement moves = new Movement();
-    ObjectOrientationAnalysisPipeline testPipeline = null;
+    CSEDeterminationPipeline testPipeline = null;
 
     @Override
     public void runOpMode() throws InterruptedException{
         robot.init(hardwareMap);
         webcam.init(hardwareMap);
-        testPipeline = new ObjectOrientationAnalysisPipeline();
+        testPipeline = new CSEDeterminationPipeline("blue");
         webcam.camera.setPipeline(testPipeline);
 
         Point midpoint;
@@ -65,7 +65,11 @@ public class TestOpMode extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()){
 
-                sleep(3000);
+                telemetry.addData("Color Value Area 1", testPipeline.getAvg1R());
+                telemetry.addData("Color Value Area 2", testPipeline.getAvg2R());
+                telemetry.update();
+
+                /*sleep(3000);
                 webcam.camera.setPipeline(testPipeline);
                 midpoint = testPipeline.getMidpoints().get(0);
 
@@ -87,18 +91,22 @@ public class TestOpMode extends LinearOpMode {
                     robot.setAllWheelPower(0);
                 }
 
-                /*midpoint = testPipeline.getMidpoints().get(0);
+                midpoint = testPipeline.getMidpoints().get(0);
                 int yError = moves.isBlockInYRegion(midpoint.y);
 
                 if(yError > 0){
-                    while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
-                        moves.linearMove(robot,0.5, 1, 1, 1, 1);
+                    while(moves.isBlockInYRegion(testPipeline.getMidpoints().get(0).x) != 0){
+                        moves.linearMove(robot,0.2, 1, 1, 1, 1);
+                        webcam.camera.setPipeline(testPipeline);
                     }
+                    robot.setAllWheelPower(0);
                 }
                 else if(xError < 0){
-                    while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
-                        moves.linearMove(robot,0.5, -1, -1, -1, -1);
+                    while(moves.isBlockInYRegion(testPipeline.getMidpoints().get(0).x) != 0){
+                        moves.linearMove(robot,0.2, -1, -1, -1, -1);
+                        webcam.camera.setPipeline(testPipeline);
                     }
+                    robot.setAllWheelPower(0);
                 }*/
 
         }

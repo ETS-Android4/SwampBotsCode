@@ -109,6 +109,92 @@ public class LeftBlueAuto extends LinearOpMode {
 
             //Move arm out of way for camera to see the CSE, HOPEFULLY DELETE SOON
 
+            robot.grabBlock();
+            sleep(500);
+
+            moves.linearMoveDistance(robot, 7, -1, -1, -1, -1);
+            moves.linearMoveDistance(robot, 36, 1, -1, 1, -1);
+            moves.linearMoveDistanceHalfInch(robot, 1, -1, 1, -1);
+            sleep(100);
+
+            moves.linearMoveDistance(robot, 2, -1, 1, 1, -1);
+
+            webcam.camera.setPipeline(csePipeline);
+            sleep(200);
+            CSEPosition = csePipeline.getAnalysis();
+            telemetry.addData("Position", CSEPosition);
+            telemetry.update();
+
+            moves.linearMoveDistance(robot, 2, 1, -1, -1, 1);
+            sleep(200);
+            moves.linearMoveDistanceHalfInch(robot, 1, -1, 1, -1);
+
+            moves.linearMoveDistance(robot, 29, 1, 1, 1, 1);
+            moves.rotateArm(robot, 120);
+
+
+            if(CSEPosition == 2)
+            {
+                moves.linearMoveDistance(robot, 19, -1, 1, -1, 1);
+                moves.linearMoveDistance(robot, 4, -1, -1, -1, -1);
+                sleep(200);
+                moves.rotateArm(robot, 30);
+                robot.releaseBlock();
+                sleep(200);
+                moves.rotateArm(robot, -40);
+                moves.linearMoveDistance(robot, 4, 1, 1, 1, 1);
+
+                moves.linearMoveDistance(robot, 23, -1, 1, 1, -1);
+                moves.linearMoveDistance(robot, 43, 1, 1, 1, 1);
+
+                moves.linearMoveDistance(robot, 38, 1, -1, 1, -1);
+                moves.linearMoveDistance(robot, 15, -1, 1, 1, -1);
+                moves.linearMoveDistance(robot, 14, -1, -1, -1, -1);
+            } else if(CSEPosition == 1){
+
+                sleep(800);
+                moves.linearMoveDistance(robot, 14, -1, 1, -1, 1);
+                moves.rotateArm(robot, 60);
+                moves.linearMoveDistance(robot, 4, -1, 1, -1, 1);
+
+                robot.releaseBlock();
+
+
+                moves.rotateArm(robot, -1);
+                moves.linearMoveDistance(robot, 18, 1, -1, 1, -1);
+                moves.linearMoveDistanceHalfInch(robot, 1, -1, 1, -1);
+
+                moves.rotateArm(robot, -100);
+                moves.linearMoveDistance(robot, 20, -1, -1, -1, -1);
+                moves.linearMoveDistance(robot, 19, 1, -1, 1, -1);
+
+                moves.linearMoveDistance(robot, 43, -1, -1, -1, -1);
+                moves.linearMoveDistance(robot, 14, -1, 1, 1, -1);
+                moves.linearMoveDistance(robot, 14, -1, -1, -1, -1);
+
+            } else if(CSEPosition == 0){
+
+                sleep(200);
+                moves.linearMoveDistance(robot, 12, -1, 1, -1, 1);
+                moves.rotateArm(robot, 75);
+                moves.linearMoveDistance(robot, 4, -1, 1, -1, 1);
+
+                robot.releaseBlock();
+
+                moves.rotateArm(robot, -1);
+                moves.linearMoveDistance(robot, 16, 1, -1, 1, -1);
+                moves.linearMoveDistanceHalfInch(robot, 1, -1, 1, -1);
+
+                moves.rotateArm(robot, -110);
+                moves.linearMoveDistance(robot, 20, -1, -1, -1, -1);
+                moves.linearMoveDistance(robot, 19, 1, -1, 1, -1);
+
+                moves.linearMoveDistance(robot, 43, -1, -1, -1, -1);
+                moves.linearMoveDistance(robot, 14, -1, 1, 1, -1);
+                moves.linearMoveDistance(robot, 14, -1, -1, -1, -1);
+            }
+
+            sleep(5000);
             telemetry.update();
 
             counter++;

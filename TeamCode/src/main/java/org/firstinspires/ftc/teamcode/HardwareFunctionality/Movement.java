@@ -15,6 +15,7 @@ public class Movement {
     static final double TICKS_PER_MOTOR_REV = 537.7;
     static final double WHEEL_DIAMETER_INCHES = 3.77953;
     static final double TICKS_PER_INCH_REV = TICKS_PER_MOTOR_REV / (WHEEL_DIAMETER_INCHES * 3.141592);
+    static final double TICKS_PER_HALF_INCH_REV = TICKS_PER_INCH_REV / 2;
 
     static final double TICKS_PER_MOTOR_HEX = 288.0;
     static final double TICKS_PER_DEGREE_HEX = TICKS_PER_MOTOR_HEX / 360.0;
@@ -47,6 +48,28 @@ public class Movement {
 
         robot.setAllWheelPower(0);
         robot.setWheelEncoderMode(RUN_USING_ENCODER);
+
+    }
+
+    public void linearMoveDistanceHalfInch(Robot robot, int flSign, int frSign, int blSign, int brSign){
+        robot.setWheelEncoderMode(STOP_AND_RESET_ENCODER);
+
+        int targetPosition = robot.frontLeft.getCurrentPosition() + (int)(TICKS_PER_HALF_INCH_REV);
+
+        robot.frontLeft.setTargetPosition((int)(flSign * targetPosition));
+        robot.frontRight.setTargetPosition((int)(frSign * targetPosition));
+        robot.backLeft.setTargetPosition((int)(blSign * targetPosition));
+        robot.backRight.setTargetPosition((int)(brSign * targetPosition));
+
+        robot.setWheelEncoderMode(RUN_TO_POSITION);
+        robot.setAllWheelPower(0.5);
+
+        while(robot.frontLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy() && robot.backLeft.isBusy()) {
+
+        }
+
+        robot.setAllWheelPower(0);
+        robot.setWheelEncoderMode(RUN_USING_ENCODER);
     }
 
     public void linearMove(Robot robot, double power, int flSign, int frSign, int blSign, int brSign){
@@ -58,7 +81,7 @@ public class Movement {
     
     //Method for rotation of arm with encoders 
     
-    public void rotateArm(Robot robot, int degrees){
+    public void rotateArm(Robot robot, double degrees){
         robot.setArmEncoderMode(STOP_AND_RESET_ENCODER);
 
         int targetAngle = robot.leftArm.getCurrentPosition() + (int)(-(degrees - 12) * TICKS_PER_DEGREE_HEX);
@@ -66,7 +89,7 @@ public class Movement {
         robot.rightArm.setTargetPosition(targetAngle);
 
         robot.setArmEncoderMode(RUN_TO_POSITION);
-        robot.setArmPower(0.3);
+        robot.setArmPower(0.5);
 
         while(robot.leftArm.isBusy() && robot.rightArm.isBusy()) {
 
@@ -97,4 +120,6 @@ public class Movement {
             return 0;
         }
     }
+
+
 }

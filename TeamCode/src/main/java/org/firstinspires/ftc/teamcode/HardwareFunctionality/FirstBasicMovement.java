@@ -60,34 +60,13 @@ public class FirstBasicMovement extends LinearOpMode {
             robot.rightArm.setPower(armVertical * 0.3);
 
 
-            //YOU NEED TO CHECK IF OUR MOTOR CAN BE A DCMOTOREX OBJECT. USE THE instanceOf TO CHECK
-            if(gamepad1.right_trigger > 0){
-                if(!trigger_pressed){
-                    robot.carousel.setVelocity(120, AngleUnit.DEGREES);
-                    resetStartTime();
-                    trigger_pressed = true;
-                } else {
-                    robot.carousel.setVelocity(getAngularVelocity(time), AngleUnit.DEGREES);
-                }
-
-            } else if(gamepad1.left_trigger > 0){
-                if(!trigger_pressed){
-                    robot.carousel.setVelocity(-120, AngleUnit.DEGREES);
-                    resetStartTime();
-                    trigger_pressed = true;
-                } else {
-                    robot.carousel.setVelocity(-getAngularVelocity(time), AngleUnit.DEGREES);
-                }
 
 
-            } else {
-                robot.carousel.setPower(0);
-                trigger_pressed = false;
-            }
 
-            //Servo Controls
-            telemetry.addData("Right Hand Position: ", robot.rightHand.getPosition());
-            telemetry.addData("Left Hand Position: ", robot.leftHand.getPosition());
+            robot.carousel.setPower(gamepad2.right_stick_y);
+
+            telemetry.addData("Left Trigger", gamepad1.left_trigger);
+            telemetry.addData("Right Trigger", gamepad1.right_trigger);
 
             if (gamepad2.right_bumper){ //closed position
                 robot.leftHand.setPosition(0.85);
@@ -100,23 +79,12 @@ public class FirstBasicMovement extends LinearOpMode {
             }
 
 
-            //Outputs how much power each motor is experiencing to the driver hub
-            telemetry.addData("frontRight Power: ", robot.frontRight.getPower());
-            telemetry.addData("backRight Power: ", robot.backRight.getPower());
-            telemetry.addData("frontLeft Power: ", robot.frontLeft.getPower());
-            telemetry.addData("backLeft Power: " , robot.backLeft.getPower());
-            telemetry.addData("left Arm Motor Power: ", robot.leftArm.getPower());
-            telemetry.addData("Right Arm Motor Power: ", robot.rightArm.getPower());
-            telemetry.addData("left Hand Servo Position: ", robot.leftHand.getPosition());
-            telemetry.addData("Right Hand Servo Position", robot.rightHand.getPosition());
+
 
             telemetry.update();
             idle();
         }
     }
 
-    public double getAngularVelocity(double seconds){
-        //Linear equation that will return the wanted angular velocity in degrees/second.
-        return 20*seconds + 120;
-    }
+
 }

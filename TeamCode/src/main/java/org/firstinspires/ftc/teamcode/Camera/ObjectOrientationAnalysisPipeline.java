@@ -103,8 +103,9 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
                 }
             }
 
-            Imgproc.line(input, new Point(480,0),new Point(480, 720), BLUE, 3);
-            Imgproc.line(input, new Point(880, 0), new Point(880,720), BLUE, 3);
+
+            Imgproc.line(contoursOnPlainImage, new Point(0,550),new Point(1280, 550), BLUE, 3);
+            Imgproc.line(contoursOnPlainImage, new Point(0, 720), new Point(1280,720), BLUE, 3);
 
             return contoursOnPlainImage;
         }
