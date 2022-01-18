@@ -20,6 +20,7 @@ public class LeftBlueAuto extends LinearOpMode {
 
 
     private int CSEPosition;
+    //useless comment
 
     @Override
     public void runOpMode() throws InterruptedException{
