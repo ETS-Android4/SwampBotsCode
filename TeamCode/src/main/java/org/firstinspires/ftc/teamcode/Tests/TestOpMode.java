@@ -69,7 +69,7 @@ public class TestOpMode extends LinearOpMode {
                 telemetry.addData("Color Value Area 2", testPipeline.getAvg2R());
                 telemetry.update();
 
-                /*sleep(3000);
+               /* sleep(3000);
                 webcam.camera.setPipeline(testPipeline);
                 midpoint = testPipeline.getMidpoints().get(0);
 

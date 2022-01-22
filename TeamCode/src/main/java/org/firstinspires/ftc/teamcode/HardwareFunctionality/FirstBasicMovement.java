@@ -59,7 +59,10 @@ public class FirstBasicMovement extends LinearOpMode {
             robot.leftArm.setPower(armVertical * 0.3);
             robot.rightArm.setPower(armVertical * 0.3);
 
-
+            telemetry.addData("LeftFront", robot.frontLeft.getPower());
+            telemetry.addData("RightFront", robot.frontRight.getPower());
+            telemetry.addData("LeftBack", robot.backLeft.getPower());
+            telemetry.addData("RightBack", robot.backRight.getPower());
 
 
 

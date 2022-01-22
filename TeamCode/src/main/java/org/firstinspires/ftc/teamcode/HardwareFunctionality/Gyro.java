@@ -25,14 +25,17 @@ public class Gyro extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         robot.init(hardwareMap);
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu1");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        imu.initialize(parameters);
 
         waitForStart();
 
-        detectAngle();
+        while(opModeIsActive()){
+            turn(90);
+        }
     }
 
 
@@ -50,7 +53,7 @@ public class Gyro extends LinearOpMode {
     public double getAngle(){
         Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
-        double deltaAngle = orientation.firstAngle - lastAngles.firstAngle;
+        double deltaAngle = orientation.thirdAngle - lastAngles.thirdAngle;
 
         if(deltaAngle > 180){
             deltaAngle -= 360;
@@ -68,8 +71,8 @@ public class Gyro extends LinearOpMode {
 
         double error = degrees;
 
-        while(opModeIsActive() && Math.abs(error) > 2){
-            double motorPower = (error < 0 ? -0.6 : 0.6);
+        while(opModeIsActive() && Math.abs(error) > 15){
+            double motorPower = (error < 0 ? -0.3 : 0.3);
             robot.setWheelPower(-motorPower, motorPower, -motorPower, motorPower);
             error = degrees - getAngle();
         }

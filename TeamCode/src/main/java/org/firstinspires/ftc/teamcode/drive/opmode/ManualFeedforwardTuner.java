@@ -82,6 +82,8 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
         waitForStart();
 
+        sleep(1000);
+
         if (isStopRequested()) return;
 
         boolean movingForwards = true;
