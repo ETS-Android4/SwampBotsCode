@@ -14,27 +14,19 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TestOpModeTeleop extends LinearOpMode {
 
     Robot robot = new Robot();
-    private BNO055IMU imu;
 
-    private Orientation lastAngles = new Orientation();
-    private double currAngle = 0.0;
 
     public void runOpMode(){
         robot.init(hardwareMap);
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        imu.initialize(parameters);
 
         double vertical, horizontal, pivot;
+        double angle;
 
-        currAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).secondAngle;
         waitForStart();
 
         while(opModeIsActive()){
-            lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            telemetry.addData("Angle Turn", currAngle-(lastAngles.secondAngle));
+            angle = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle;
+            telemetry.addData("Angle", angle);
             telemetry.update();
 
             vertical = -gamepad1.left_stick_y;

@@ -15,7 +15,7 @@ public class Gyro extends LinearOpMode {
     Robot robot = new Robot();
 
     private ElapsedTime runtime = new ElapsedTime();
-    private BNO055IMU imu;
+
 
     private Orientation lastAngles = new Orientation();
     private double currAngle = 0.0;
@@ -25,33 +25,27 @@ public class Gyro extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         robot.init(hardwareMap);
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        imu.initialize(parameters);
-
         waitForStart();
 
         while(opModeIsActive()){
-            turn(90);
+
         }
     }
 
 
 
     public void resetAngle(){
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        lastAngles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         currAngle = 0;
     }
 
     public void detectAngle(){
-        telemetry.addData("Angle", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES));
+        telemetry.addData("Angle", robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES));
         telemetry.update();
     }
 
     public double getAngle(){
-        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation orientation = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         double deltaAngle = orientation.thirdAngle - lastAngles.thirdAngle;
 
@@ -81,7 +75,7 @@ public class Gyro extends LinearOpMode {
     }
 
     public void turnTo(double degrees){
-        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation orientation = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         double error = degrees - orientation.firstAngle;
 
@@ -95,7 +89,7 @@ public class Gyro extends LinearOpMode {
     }
 
     public double getAbsoluteAngle(){
-        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        return robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
     }
 
 
