@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Tests;
 
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+
 import org.firstinspires.ftc.teamcode.HardwareFunctionality.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -23,13 +27,13 @@ public class TestOpMode extends LinearOpMode {
     Robot robot = new Robot();
     Webcam webcam = new Webcam();
     Movement moves = new Movement();
-    CSEDeterminationPipeline testPipeline = null;
+    ObjectOrientationAnalysisPipeline testPipeline = null;
 
     @Override
     public void runOpMode() throws InterruptedException{
         robot.init(hardwareMap);
         webcam.init(hardwareMap);
-        testPipeline = new CSEDeterminationPipeline("blue");
+        testPipeline = new ObjectOrientationAnalysisPipeline();
         webcam.camera.setPipeline(testPipeline);
 
         Point midpoint;
@@ -57,57 +61,60 @@ public class TestOpMode extends LinearOpMode {
         });
 
 
-
-
-        //TEST STRAFE DIRECTION FIRST BEFORE TRYING THE MIDPOINT MOVEMENT
-
+        int counter = 0;
 
         waitForStart();
-        while(opModeIsActive()){
+        while(opModeIsActive() && counter == 0){
 
-                telemetry.addData("Color Value Area 1", testPipeline.getAvg1R());
-                telemetry.addData("Color Value Area 2", testPipeline.getAvg2R());
-                telemetry.update();
-
-               /* sleep(3000);
                 webcam.camera.setPipeline(testPipeline);
-                midpoint = testPipeline.getMidpoints().get(0);
+                midpoint = testPipeline.getMidpoint();
 
 
-                int xError = moves.isBlockInXRegion(midpoint.x);
+                int xError = moves.isBlockInXRegion(midpoint.x, midpoint.y);
 
                 if(xError > 0){
-                    while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
-                        moves.linearMove(robot,0.3, -1, 1, 1, -1);
+                    while(moves.isBlockInXRegion(testPipeline.getMidpoint().x, testPipeline.getMidpoint().y) != 0){
+                        telemetry.addData("pos", moves.isBlockInXRegion(testPipeline.getMidpoint().x, testPipeline.getMidpoint().y));
+                        telemetry.update();
+                        moves.linearMove(robot,0.2, -1, 1, 1, -1);
                         webcam.camera.setPipeline(testPipeline);
                     }
                     robot.setAllWheelPower(0);
                 }
                 else if(xError < 0){
-                    while(moves.isBlockInXRegion(testPipeline.getMidpoints().get(0).x) != 0){
-                        moves.linearMove(robot,0.3, 1, -1, -1, 1);
+                    while(moves.isBlockInXRegion(testPipeline.getMidpoint().x, testPipeline.getMidpoint().y) != 0){
+                        moves.linearMove(robot,0.2, 1, -1, -1, 1);
                         webcam.camera.setPipeline(testPipeline);
                     }
                     robot.setAllWheelPower(0);
                 }
 
-                midpoint = testPipeline.getMidpoints().get(0);
+                sleep(500);
+                midpoint = testPipeline.getMidpoint();
                 int yError = moves.isBlockInYRegion(midpoint.y);
 
                 if(yError > 0){
-                    while(moves.isBlockInYRegion(testPipeline.getMidpoints().get(0).x) != 0){
+                    while(moves.isBlockInYRegion(testPipeline.getMidpoint().y) != 0){
                         moves.linearMove(robot,0.2, 1, 1, 1, 1);
                         webcam.camera.setPipeline(testPipeline);
                     }
                     robot.setAllWheelPower(0);
                 }
-                else if(xError < 0){
-                    while(moves.isBlockInYRegion(testPipeline.getMidpoints().get(0).x) != 0){
+                else if(yError < 0){
+                    while(moves.isBlockInYRegion(testPipeline.getMidpoint().y) != 0){
                         moves.linearMove(robot,0.2, -1, -1, -1, -1);
                         webcam.camera.setPipeline(testPipeline);
                     }
                     robot.setAllWheelPower(0);
-                }*/
+                }
+
+                moves.linearMoveDistance(robot, 0.3, 11, 1, 1, 1, 1);
+                sleep(200);
+                robot.grabBlock();
+
+
+                sleep(10000);
+                counter++;
 
         }
     }

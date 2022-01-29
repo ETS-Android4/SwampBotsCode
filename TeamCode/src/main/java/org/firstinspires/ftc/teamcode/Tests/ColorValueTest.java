@@ -44,10 +44,10 @@ public class ColorValueTest extends OpenCvPipeline {
     public Mat processFrame(Mat input){
         inputConversion(input);
 
-        Imgproc.rectangle(Cb, pointA, pointB, new Scalar(0,0,0), 2);
+        Imgproc.rectangle(input, pointA, pointB, new Scalar(0,0,0), 2);
 
         avg = (int) Core.mean(region).val[0];
-        return Cb;
+        return input;
     }
 
     public int getValue(){ return avg; }

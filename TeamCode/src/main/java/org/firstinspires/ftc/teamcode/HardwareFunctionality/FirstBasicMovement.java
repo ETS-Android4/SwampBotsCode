@@ -56,8 +56,8 @@ public class FirstBasicMovement extends LinearOpMode {
             robot.backLeft.setPower(pivot + vertical - horizontal);
 
             armVertical = gamepad2.left_stick_y;
-            robot.leftArm.setPower(armVertical * 0.3);
-            robot.rightArm.setPower(armVertical * 0.3);
+
+            robot.arm.setPower(armVertical * 0.15);
 
             telemetry.addData("LeftFront", robot.frontLeft.getPower());
             telemetry.addData("RightFront", robot.frontRight.getPower());

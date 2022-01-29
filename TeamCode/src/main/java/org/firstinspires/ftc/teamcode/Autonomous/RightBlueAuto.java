@@ -3,13 +3,18 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import org.firstinspires.ftc.teamcode.Camera.*;
 import org.firstinspires.ftc.teamcode.HardwareFunctionality.*;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-
+@Config
 @Autonomous(name = "RightBlueAuto", group = "Blue")
 public class RightBlueAuto extends LinearOpMode {
 
@@ -18,10 +23,16 @@ public class RightBlueAuto extends LinearOpMode {
     Webcam webcam = new Webcam();
     CSEDeterminationPipeline csePipeline = null;
 
+    public static int XDISTANCE = 30;
+    public static int YDISTANCE = 30;
+    public static int HEADING = 0;
+
     private int CSEPosition;
 
     @Override
     public void runOpMode() throws InterruptedException{
+
+
 
         //Defines motors and direction
         robot.init(hardwareMap);
@@ -29,6 +40,14 @@ public class RightBlueAuto extends LinearOpMode {
         csePipeline = new CSEDeterminationPipeline("blue");
 
         webcam.camera.setPipeline(csePipeline);
+
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Pose2d startPose = new Pose2d();
+        drive.setPoseEstimate(startPose);
+
+        Trajectory test = drive.trajectoryBuilder(startPose)
+                .splineTo(new Vector2d(XDISTANCE, YDISTANCE), HEADING)
+                .build();
 
 
 
@@ -60,90 +79,9 @@ public class RightBlueAuto extends LinearOpMode {
         //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
         waitForStart();
 
-        int counter = 0;
-        while (opModeIsActive() && counter == 0){
+        if(isStopRequested()) return;
 
+        drive.followTrajectory(test);
 
-            robot.grabBlock();
-            sleep(500);
-
-            moves.linearMoveDistance(robot, 7, -1, -1, -1, -1);
-            sleep(100);
-            moves.linearMoveDistance(robot, 36, 1, -1, 1, -1);
-            sleep(100);
-            moves.linearMoveDistanceHalfInch(robot, 1, -1, 1, -1);
-            sleep(100);
-
-            webcam.camera.setPipeline(csePipeline);
-            sleep(200);
-            CSEPosition = csePipeline.getAnalysis();
-            telemetry.addData("Position", CSEPosition);
-            telemetry.update();
-
-            moves.linearMoveDistance(robot, 29, 1, 1, 1, 1);
-            sleep(100);
-            moves.linearMoveDistance(robot, 19, 1, -1, 1, -1);
-            sleep(100);
-            moves.rotateArm(robot, 120);
-            sleep(300);
-
-            if(CSEPosition == 2){
-
-                moves.linearMoveDistance(robot, 3, -1, -1, -1, -1);
-                sleep(100);
-                moves.rotateArm(robot, 45);
-                robot.releaseBlock();
-                sleep(100);
-                moves.rotateArm(robot, -45);
-                moves.linearMoveDistance(robot, 18, 1, -1, 1, -1);
-                sleep(100);
-                moves.linearMoveDistance(robot, 32, -1, 1, 1, -1);
-
-
-            } else if(CSEPosition == 1){
-
-                moves.linearMoveDistance(robot, 6, 1, 1, 1, 1);
-                moves.rotateArm(robot, 60);
-                moves.linearMoveDistance(robot, 6, -1, -1, -1, -1);
-                robot.releaseBlock();
-
-                moves.linearMoveDistance(robot, 6, 1, 1, 1, 1);
-                moves.linearMoveDistance(robot, 18, 1,-1, 1, -1);
-
-                moves.linearMoveDistance(robot, 20, -1, 1, 1, -1);
-                moves.rotateArm(robot, -90);
-
-            } else if(CSEPosition == 0) {
-
-                moves.linearMoveDistance(robot, 6, 1, 1, 1, 1);
-                moves.rotateArm(robot, 80);
-                sleep(200);
-                moves.linearMoveDistance(robot, 6, -1, -1, -1, -1);
-                robot.releaseBlock();
-
-                moves.linearMoveDistance(robot, 6, 1, 1, 1, 1);
-                moves.linearMoveDistance(robot, 18, 1,-1, 1, -1);
-
-                moves.linearMoveDistance(robot, 21, -1, 1, 1, -1);
-                moves.rotateArm(robot, -110);
-                sleep(200);
-
-            }
-
-            sleep(100);
-            moves.linearMoveDistance(robot, 31, 1, 1,1, 1);
-            moves.linearMoveDistanceHalfInch(robot, 1, 1, 1, 1);
-
-            double time = getRuntime();
-            while(getRuntime() < time + 4){
-                robot.carousel.setPower(-0.8);
-            }
-            robot.carousel.setPower(0);
-
-            moves.linearMoveDistance(robot, 20, -1, -1, -1, -1);
-
-            sleep(3000);
-            counter++;
-        }
     }
 }

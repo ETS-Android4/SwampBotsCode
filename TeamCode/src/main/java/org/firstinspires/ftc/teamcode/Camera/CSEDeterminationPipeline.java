@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Camera;
 
+import com.acmerobotics.dashboard.config.Config;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -8,6 +10,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+@Config
 public class CSEDeterminationPipeline extends OpenCvPipeline {
 
     //Either red or blue, represents which side of field we start on
@@ -18,12 +21,12 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     static final Scalar GREEN = new Scalar(0, 255, 0);
 
     //Tested points for where the regions should be on the frame. Adjust if camera is off
-    static final Point REGION1_TOP_LEFT_ANCHOR_POINT = new Point(175, 430);
-    static final Point REGION2_TOP_LEFT_ANCHOR_POINT = new Point(1000, 430);
+    public static Point REGION1_TOP_LEFT_ANCHOR_POINT = new Point(300, 220);
+    public static Point REGION2_TOP_LEFT_ANCHOR_POINT = new Point(930, 220);
 
 
-    static final int REGION_WIDTH = 250;
-    static final int REGION_HEIGHT = 150;
+    public static int REGION_WIDTH = 200;
+    public static int REGION_HEIGHT = 120;
     
     
     //Create points for corners of rectangles
@@ -120,23 +123,13 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
             //Give a value to position and highlight the rectangle that is being selected
             position = 0;
 
-            Imgproc.rectangle(
-                    input,
-                    region1_PointA,
-                    region1_PointB,
-                    GREEN,
-                    -1);
+            Imgproc.rectangle(input, region1_PointA, region1_PointB, GREEN, -1);
         }
         else if(min == avg2B || min == avg2R)
         {
             position = 1;
 
-            Imgproc.rectangle(
-                    input,
-                    region2_PointA,
-                    region2_PointB,
-                    GREEN,
-                    -1);
+            Imgproc.rectangle(input, region2_PointA, region2_PointB, GREEN, -1);
         }
         else if(min == 0){
             position = 2;
@@ -149,14 +142,6 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     //Function used to give opmode the information about position
     public int getAnalysis(){
         return position;
-    }
-
-    public int getAvg1R(){
-        return avg1R;
-    }
-
-    public int getAvg2R(){
-        return avg2R;
     }
 
 }

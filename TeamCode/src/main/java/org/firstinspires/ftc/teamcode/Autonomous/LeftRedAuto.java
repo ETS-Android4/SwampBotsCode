@@ -103,7 +103,7 @@ public class LeftRedAuto extends LinearOpMode {
              */
 
 
-            robot.grabBlock();
+            /*robot.grabBlock();
             sleep(500);
 
             moves.linearMoveDistance(robot, 7, -1, -1, -1, -1);
@@ -179,7 +179,7 @@ public class LeftRedAuto extends LinearOpMode {
             robot.carousel.setPower(0);
 
             moves.linearMoveDistance(robot, 22, 1, -1, -1, 1);
-            counter++;
+            counter++;*/
         }
     }
 }

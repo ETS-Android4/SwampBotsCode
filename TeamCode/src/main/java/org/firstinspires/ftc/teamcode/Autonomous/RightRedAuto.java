@@ -96,7 +96,7 @@ public class RightRedAuto extends LinearOpMode {
 
                 24 INCHES = 90 DEGREE TURN WHEEl
              */
-            robot.grabBlock();
+            /*robot.grabBlock();
             sleep(500);
 
             moves.linearMoveDistance(robot, 7, -1, -1, -1, -1);
@@ -181,7 +181,7 @@ public class RightRedAuto extends LinearOpMode {
 
 
 
-            counter++;
+            counter++;*/
         }
     }
 }

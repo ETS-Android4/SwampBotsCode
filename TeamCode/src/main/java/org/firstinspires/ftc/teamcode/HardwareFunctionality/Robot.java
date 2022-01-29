@@ -23,8 +23,7 @@ public class Robot {
     public DcMotor backLeft = null;
     public DcMotor backRight = null;
 
-    public DcMotor leftArm = null;
-    public DcMotor rightArm = null;
+    public DcMotor arm = null;
 
     public DcMotor carousel = null;
 
@@ -50,12 +49,10 @@ public class Robot {
         frontLeft = hw.dcMotor.get("motor2");
         backRight = hw.dcMotor.get("motor3");
         backLeft = hw.dcMotor.get("motor4");
-        rightArm = hw.dcMotor.get("motor5");
-        leftArm = hw.dcMotor.get("motor6");
+        arm = hw.dcMotor.get("motor5");
         rightHand = hw.servo.get("rightHand");
         leftHand = hw.servo.get("leftHand");
         carousel = hw.get(DcMotorEx.class, "carrouselMotor");
-        imu = hw.get(BNO055IMU.class, "imu");
 
 
         //Set motor direction
@@ -63,16 +60,15 @@ public class Robot {
         backLeft.setDirection(DcMotor.Direction.FORWARD);
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.REVERSE);
-        rightArm.setDirection(DcMotor.Direction.FORWARD);
-        leftArm.setDirection(DcMotor.Direction.FORWARD);
+        arm.setDirection(DcMotor.Direction.REVERSE);
         rightHand.setDirection(Servo.Direction.FORWARD);
         leftHand.setDirection(Servo.Direction.REVERSE);
         carousel.setDirection(DcMotor.Direction.FORWARD);
 
         //Set motor power to zero
         setAllWheelPower(0);
-        rightArm.setPower(0);
-        leftArm.setPower(0);
+        arm.setPower(0);
+
         carousel.setPower(0);
 
         //Set zero power behavior on motors
@@ -80,8 +76,7 @@ public class Robot {
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         setWheelEncoderMode(STOP_AND_RESET_ENCODER);
@@ -89,16 +84,12 @@ public class Robot {
         setArmEncoderMode(STOP_AND_RESET_ENCODER);
         setArmEncoderMode(RUN_USING_ENCODER);
 
-        leftHand.setPosition(0.75);
-        rightHand.setPosition(0.44);
+        leftHand.setPosition(0.74);
+        rightHand.setPosition(0.41);
 
+        imu = hw.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(parameters);
 
     }
@@ -118,8 +109,7 @@ public class Robot {
     }
 
     public void setArmPower(double p){
-        rightArm.setPower(p);
-        leftArm.setPower(p);
+        arm.setPower(p * 0.3);
     }
 
     public void setWheelEncoderMode(DcMotor.RunMode r){
@@ -130,8 +120,7 @@ public class Robot {
     }
 
     public void setArmEncoderMode(DcMotor.RunMode r){
-        rightArm.setMode(r);
-        leftArm.setMode(r);
+        arm.setMode(r);
     }
 
     public void grabBlock(){

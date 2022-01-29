@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Camera;
 
+import java.util.*;
+
 import android.provider.ContactsContract;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -34,8 +36,11 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
         Mat contoursOnPlainImage = new Mat();
         ArrayList<Point> midpoints = new ArrayList<>();
 
+        ArrayList<Point> emptyList = new ArrayList<>();
 
-        static final int CB_CHAN_MASK_THRESHOLD = 110;
+
+
+        static final int CB_CHAN_MASK_THRESHOLD = 85;
         static final double DENSITY_UPRIGHT_THRESHOLD = 0.03;
 
         //Used in morphing mask
@@ -91,8 +96,8 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
 
         public Mat processFrame(Mat input){
-
             midpoints.clear();
+
             ArrayList<MatOfPoint> contourList = findContours(input);
 
             if(contourList.size() != 0){
@@ -103,10 +108,8 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
                 }
             }
 
-
-            Imgproc.line(contoursOnPlainImage, new Point(0,550),new Point(1280, 550), BLUE, 3);
-            Imgproc.line(contoursOnPlainImage, new Point(0, 720), new Point(1280,720), BLUE, 3);
-
+            Imgproc.line(contoursOnPlainImage, new Point(0,500), new Point(1280, 500), new Scalar(0,0,0), 3);
+            Imgproc.line(contoursOnPlainImage, new Point(0,420), new Point(1280, 400), new Scalar(0,0,0), 3);
             return contoursOnPlainImage;
         }
 
@@ -182,7 +185,12 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
         }
 
 
-        public ArrayList<Point> getMidpoints(){ return midpoints; }
+        public Point getMidpoint(){
+            if(midpoints.size() > 0){
+                return midpoints.get(0);
+            }
+            return new Point(0,0);
+        }
 }
 
 

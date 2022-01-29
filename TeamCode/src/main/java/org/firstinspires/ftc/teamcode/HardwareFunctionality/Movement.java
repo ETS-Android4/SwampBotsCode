@@ -4,6 +4,8 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.teamcode.Camera.*;
 import org.firstinspires.ftc.teamcode.Autonomous.*;
 import org.opencv.core.Point;
@@ -17,19 +19,19 @@ public class Movement {
     static final double TICKS_PER_INCH_REV = TICKS_PER_MOTOR_REV / (WHEEL_DIAMETER_INCHES * 3.141592);
     static final double TICKS_PER_HALF_INCH_REV = TICKS_PER_INCH_REV / 2;
 
-    static final double TICKS_PER_MOTOR_HEX = 288.0;
+    static final double TICKS_PER_MOTOR_HEX = 1993.6;
     static final double TICKS_PER_DEGREE_HEX = TICKS_PER_MOTOR_HEX / 360.0;
 
-    static final int RIGHT_REGION_SIDE_COORDINATE = 480;
-    static final int LEFT_REGION_SIDE_COORDINATE = 880;
-    static final int TOP_REGION_SIDE_COORDINATE = 400;
-    static final int BOTTOM_REGION_SIDE_COORDINATE = 200;
+    //static final int RIGHT_REGION_SIDE_COORDINATE = 480;
+    //static final int LEFT_REGION_SIDE_COORDINATE = 880;
+    static final int TOP_REGION_SIDE_COORDINATE = 500;
+    static final int BOTTOM_REGION_SIDE_COORDINATE = 420;
     
     
     
     //For movement forward, backward, pivoting, and strafing. SOON YOU HAVE TO GET NEW METHODS FOR PIVOTING AND STRAFING
     
-    public void linearMoveDistance(Robot robot, int inches, double flSign, double frSign, double blSign, double brSign){
+    public void linearMoveDistance(Robot robot, double power, int inches, double flSign, double frSign, double blSign, double brSign){
         robot.setWheelEncoderMode(STOP_AND_RESET_ENCODER);
 
         int targetPosition = robot.frontLeft.getCurrentPosition() + (int)(inches * TICKS_PER_INCH_REV);
@@ -40,7 +42,7 @@ public class Movement {
         robot.backRight.setTargetPosition((int)(brSign * targetPosition));
 
         robot.setWheelEncoderMode(RUN_TO_POSITION);
-        robot.setAllWheelPower(0.5);
+        robot.setAllWheelPower(power);
 
         while(robot.frontLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy() && robot.backLeft.isBusy()) {
 
@@ -84,14 +86,13 @@ public class Movement {
     public void rotateArm(Robot robot, double degrees){
         robot.setArmEncoderMode(STOP_AND_RESET_ENCODER);
 
-        int targetAngle = robot.leftArm.getCurrentPosition() + (int)(-(degrees - 12) * TICKS_PER_DEGREE_HEX);
-        robot.leftArm.setTargetPosition(targetAngle);
-        robot.rightArm.setTargetPosition(targetAngle);
+        int targetAngle = robot.arm.getCurrentPosition() + (int)(-degrees * TICKS_PER_DEGREE_HEX);
+        robot.arm.setTargetPosition(targetAngle);
 
         robot.setArmEncoderMode(RUN_TO_POSITION);
-        robot.setArmPower(0.5);
+        robot.setArmPower(0.15);
 
-        while(robot.leftArm.isBusy() && robot.rightArm.isBusy()) {
+        while(robot.arm.isBusy()) {
 
         }
 
@@ -101,14 +102,16 @@ public class Movement {
 
 
 
-    public int isBlockInXRegion(double x){
-        if(x < RIGHT_REGION_SIDE_COORDINATE){
-            return RIGHT_REGION_SIDE_COORDINATE - (int)x;
-        } else if(x > LEFT_REGION_SIDE_COORDINATE){
-            return LEFT_REGION_SIDE_COORDINATE - (int)x;
-        } else {
+
+    public int isBlockInXRegion(double x, double y){
+        if(y < (3.42*x - 2628) && y > (2.09*x - 1891)){
             return 0;
+        }else if(y > (3.42*x - 2628)) {
+            return 1;
+        }else if(y < (2.09*x - 1891)) {
+            return -1;
         }
+        return 8;
     }
 
     public int isBlockInYRegion(double y){

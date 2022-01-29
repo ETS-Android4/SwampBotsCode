@@ -110,7 +110,7 @@ public class LeftBlueAuto extends LinearOpMode {
 
             //Move arm out of way for camera to see the CSE, HOPEFULLY DELETE SOON
 
-            robot.grabBlock();
+            /*robot.grabBlock();
             sleep(500);
 
             moves.linearMoveDistance(robot, 7, -1, -1, -1, -1);
@@ -198,7 +198,7 @@ public class LeftBlueAuto extends LinearOpMode {
             sleep(5000);
             telemetry.update();
 
-            counter++;
+            counter++;*/
         }
     }
 }
