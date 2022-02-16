@@ -109,7 +109,7 @@ public class Robot {
     }
 
     public void setArmPower(double p){
-        arm.setPower(p * 0.3);
+        arm.setPower(p);
     }
 
     public void setWheelEncoderMode(DcMotor.RunMode r){

@@ -15,14 +15,18 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
 
     //Either red or blue, represents which side of field we start on
     String color;
+    String half;
 
     //Just for color of rectangles we draw on frame
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
 
+    static final int BLUE_THRESHOLD = 135;
+    static final int RED_THRESHOLD = 135;
+
     //Tested points for where the regions should be on the frame. Adjust if camera is off
-    public static Point REGION1_TOP_LEFT_ANCHOR_POINT = new Point(300, 220);
-    public static Point REGION2_TOP_LEFT_ANCHOR_POINT = new Point(930, 220);
+    public static Point REGION1_TOP_LEFT_ANCHOR_POINT = new Point(425, 200);
+    public static Point REGION2_TOP_LEFT_ANCHOR_POINT = new Point(1050, 210);
 
 
     public static int REGION_WIDTH = 200;
@@ -47,8 +51,9 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
 
     int position;  //cse position. Either 0,1,2
 
-    public CSEDeterminationPipeline(String c){
+    public CSEDeterminationPipeline(String c, String h){
         color = c;
+        half = h;
     }
 
     
@@ -99,17 +104,17 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
 
         if(color.equals("red")){
 
-            if(avg1R < 130){
+            if(avg1R < RED_THRESHOLD){
                 min = avg1R;
-            } else if(avg2R < 130){
+            } else if(avg2R < RED_THRESHOLD){
                 min = avg2R;
             }
 
         } else {
 
-            if(avg1B < 130){
+            if(avg1B < BLUE_THRESHOLD){
                 min = avg1B;
-            } else if(avg2B < 130){
+            } else if(avg2B < BLUE_THRESHOLD){
                 min = avg2B;
             }
 
@@ -119,20 +124,33 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
 
         if(min == avg1B || min == avg1R)
         {
-            
-            //Give a value to position and highlight the rectangle that is being selected
-            position = 0;
+            if(half.equals("bottom") && color.equals("red")){
+                position = 0;
+            } else {
+                position = 1;
+            }
+
+
 
             Imgproc.rectangle(input, region1_PointA, region1_PointB, GREEN, -1);
         }
         else if(min == avg2B || min == avg2R)
         {
-            position = 1;
+            if(half.equals("bottom") && color.equals("red")){
+                position = 1;
+            } else {
+                position = 2;
+            }
+
 
             Imgproc.rectangle(input, region2_PointA, region2_PointB, GREEN, -1);
         }
         else if(min == 0){
-            position = 2;
+            if(half.equals("bottom") && color.equals("red")){
+                position = 2;
+            } else {
+                position = 0;
+            }
         }
 
 
@@ -140,8 +158,12 @@ public class CSEDeterminationPipeline extends OpenCvPipeline {
     }
 
     //Function used to give opmode the information about position
-    public int getAnalysis(){
-        return position;
+    public int getAnalysis(){ return position; }
+    public double getAnalysis1(){
+        return avg1R;
+    }
+    public double getAnalysis2(){
+        return avg2R;
     }
 
 }

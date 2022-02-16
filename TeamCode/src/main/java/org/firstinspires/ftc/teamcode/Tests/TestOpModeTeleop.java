@@ -27,7 +27,7 @@ public class TestOpModeTeleop extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         robot.init(hardwareMap);
         webcam.init(hardwareMap);
-        csePipeline = new CSEDeterminationPipeline("blue");
+        csePipeline = new CSEDeterminationPipeline("blue", "top");
         position = 0;
 
 

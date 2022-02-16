@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Camera.*;
 import org.firstinspires.ftc.teamcode.Autonomous.*;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.opencv.core.Point;
 
 public class Movement {
@@ -31,7 +32,7 @@ public class Movement {
     
     //For movement forward, backward, pivoting, and strafing. SOON YOU HAVE TO GET NEW METHODS FOR PIVOTING AND STRAFING
     
-    public void linearMoveDistance(Robot robot, double power, int inches, double flSign, double frSign, double blSign, double brSign){
+    public void linearMoveDistance(SampleMecanumDrive drive, Robot robot, double power, double inches, double flSign, double frSign, double blSign, double brSign){
         robot.setWheelEncoderMode(STOP_AND_RESET_ENCODER);
 
         int targetPosition = robot.frontLeft.getCurrentPosition() + (int)(inches * TICKS_PER_INCH_REV);
@@ -45,7 +46,7 @@ public class Movement {
         robot.setAllWheelPower(power);
 
         while(robot.frontLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy() && robot.backLeft.isBusy()) {
-
+            drive.update();
         }
 
         robot.setAllWheelPower(0);
@@ -74,11 +75,13 @@ public class Movement {
         robot.setWheelEncoderMode(RUN_USING_ENCODER);
     }
 
-    public void linearMove(Robot robot, double power, int flSign, int frSign, int blSign, int brSign){
+    public void linearMove(SampleMecanumDrive drive, Robot robot, double power, int flSign, int frSign, int blSign, int brSign){
         robot.frontLeft.setPower(power * flSign);
         robot.frontRight.setPower(power * frSign);
         robot.backLeft.setPower(power * blSign);
         robot.backRight.setPower(power * brSign);
+        drive.update();
+
     }
     
     //Method for rotation of arm with encoders 
@@ -90,7 +93,7 @@ public class Movement {
         robot.arm.setTargetPosition(targetAngle);
 
         robot.setArmEncoderMode(RUN_TO_POSITION);
-        robot.setArmPower(0.15);
+        robot.setArmPower(0.4);
 
         while(robot.arm.isBusy()) {
 
@@ -104,7 +107,7 @@ public class Movement {
 
 
     public int isBlockInXRegion(double x, double y){
-        if(y < (3.42*x - 2628) && y > (2.09*x - 1891)){
+        if(y < (3.42*x - 2500) && y > (2.09*x - 2000)){
             return 0;
         }else if(y > (3.42*x - 2628)) {
             return 1;

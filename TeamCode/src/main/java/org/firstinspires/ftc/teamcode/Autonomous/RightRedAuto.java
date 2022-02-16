@@ -3,9 +3,12 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import org.firstinspires.ftc.teamcode.Camera.*;
 import org.firstinspires.ftc.teamcode.HardwareFunctionality.*;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
@@ -26,9 +29,29 @@ public class RightRedAuto extends LinearOpMode {
         //Defines motors and direction
         robot.init(hardwareMap);
         webcam.init(hardwareMap);
-        csePipeline = new CSEDeterminationPipeline("red");
-
+        csePipeline = new CSEDeterminationPipeline("red", "bottom");
         webcam.camera.setPipeline(csePipeline);
+
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Pose2d startPose = new Pose2d(8.1, -66.1, Math.toRadians(90));
+        drive.setPoseEstimate(startPose);
+
+        Trajectory firstMove = drive.trajectoryBuilder(startPose)
+                .forward(10)
+                .build();
+
+
+        Trajectory toShippingHub = drive.trajectoryBuilder(firstMove.end().plus(new Pose2d(0,0, Math.toRadians(180))))
+                .back(28)
+                .build();
+        Trajectory beforeBarrier = drive.trajectoryBuilder(toShippingHub.end())
+                .forward(26)
+                .build();
+        Trajectory endMove = drive.trajectoryBuilder(beforeBarrier.end().plus(new Pose2d(0,0,Math.toRadians(90))))
+                .forward(40)
+                .build();
+
+
 
         webcam.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -50,138 +73,71 @@ public class RightRedAuto extends LinearOpMode {
 
         //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
+        sleep(3000);
         telemetry.addData("status", "Initialized");
         telemetry.update();
 
         //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
         waitForStart();
 
-        int counter = 0;
-        while (opModeIsActive() && counter == 0) {
+        if(isStopRequested()) return;
+
+        webcam.camera.setPipeline(csePipeline);
+        sleep(200);
+        CSEPosition = csePipeline.getAnalysis();
+        telemetry.addData("Position", CSEPosition);
+        telemetry.update();
+
+        robot.grabBlock();
+
+        drive.followTrajectory(firstMove);
+        drive.turn(Math.toRadians(180));
+        drive.followTrajectory(toShippingHub);
 
 
-            /*if (colorSensor instanceof SwitchableLight) {
-                ((SwitchableLight)colorSensor).enableLight(true);
-            }
+        if(CSEPosition == 0){
 
-            colorSensor.setGain(5);
-            final float[] hsvValues = new float[3];
-
-            NormalizedRGBA colors = colorSensor.getNormalizedColors();
-
-            Color.colorToHSV(colors.toColor(), hsvValues);
-
-
-            telemetry.addData("Path0",  "Starting at %7d ",
-                    frontRight.getCurrentPosition());
-            telemetry.addLine()
-                    .addData("Red", "%.3f", colors.red)
-                    .addData("Green", "%.3f", colors.green)
-                    .addData("Blue", "%.3f", colors.blue);
-            telemetry.addLine()
-                    .addData("Hue", "%.3f", hsvValues[0])
-                    .addData("Saturation", "%.3f", hsvValues[1])
-                    .addData("Value", "%.3f", hsvValues[2]);
-            telemetry.addData("Alpha", "%.3f", colors.alpha);
-            telemetry.update();*/
-
-            /* KEY FOR LINEAR MOVES
-
-                FORWARD -- All 1's
-                BACKWARD -- All -1's
-                RIGHT -- -1, 1, 1, -1
-                LEFT -- 1, -1, -1, 1
-                CCW TURN -- -1, 1, -1, 1
-                CW TURN -- 1, -1, 1, -1
-
-                24 INCHES = 90 DEGREE TURN WHEEl
-             */
-            /*robot.grabBlock();
-            sleep(500);
-
-            moves.linearMoveDistance(robot, 7, -1, -1, -1, -1);
-            moves.linearMoveDistance(robot, 36, 1, -1, 1, -1);
-            moves.linearMoveDistanceHalfInch(robot, 1, -1, 1, -1);
-            sleep(100);
-
-            moves.linearMoveDistance(robot, 2, 1, -1, -1, 1);
-
-            webcam.camera.setPipeline(csePipeline);
+            rotateArmTime(1.476, 1);
+            drive.turn(Math.toRadians(80));
+            robot.releaseBlock();
             sleep(200);
-            CSEPosition = csePipeline.getAnalysis();
-            telemetry.addData("Position", CSEPosition);
-            telemetry.update();
+            rotateArmTime(0.05, -1);
+            drive.turn(Math.toRadians(-80));
+            rotateArmTime(0.95, -1);
 
-            moves.linearMoveDistance(robot, 2, -1, 1, 1, -1);
+        } else if(CSEPosition == 1){
+
+
+            rotateArmTime(1.326, 1);
+            drive.turn(Math.toRadians(83));
+            robot.releaseBlock();
             sleep(200);
-            moves.linearMoveDistanceHalfInch(robot, 1, -1, 1, -1);
+            rotateArmTime(0.05, -1);
+            drive.turn(Math.toRadians(-83));
+            rotateArmTime(0.65, -1);
 
-            moves.linearMoveDistance(robot, 29, 1, 1, 1, 1);
-            moves.rotateArm(robot, 120);
+        } else {
 
-            if(CSEPosition == 2)
-            {
-                moves.linearMoveDistance(robot, 19, 1, -1, 1, -1);
-                sleep(200);
-                moves.rotateArm(robot, 50);
-                robot.releaseBlock();
-                sleep(200);
-                moves.rotateArm(robot, -65);
+            rotateArmTime(1.2, 1);
+            drive.turn(Math.toRadians(90));
+            robot.releaseBlock();
+            sleep(200);
+            rotateArmTime(0.5, -1);
+            drive.turn(Math.toRadians(-90));
 
-                moves.linearMoveDistance(robot, 23, 1, -1, -1, 1);
-                moves.linearMoveDistance(robot, 43, 1, 1, 1, 1);
-                moves.linearMoveDistance(robot, 36, 1, -1, 1, -1);
-                moves.linearMoveDistance(robot, 10, 1, -1, -1, 1);
-                moves.linearMoveDistance(robot, 15, -1, -1, -1, -1);
-            } else if(CSEPosition == 1){
-
-                sleep(800);
-                moves.linearMoveDistance(robot, 14, 1, -1, 1, -1);
-                moves.rotateArm(robot, 60);
-                moves.linearMoveDistance(robot, 4, 1, -1, 1, -1);
-
-                robot.releaseBlock();
-
-
-                moves.rotateArm(robot, -0.3);
-                moves.linearMoveDistance(robot, 16, -1, 1, -1, 1);
-                moves.linearMoveDistanceHalfInch(robot, -1, 1, -1, 1);
-
-                moves.rotateArm(robot, -90);
-                moves.linearMoveDistance(robot, 20, -1, -1, -1, -1);
-                moves.linearMoveDistance(robot, 19, -1, 1, -1, 1);
-
-                moves.linearMoveDistance(robot, 43, -1, -1, -1, -1);
-                moves.linearMoveDistance(robot, 10, 1, -1, -1, 1);
-                moves.linearMoveDistance(robot, 15, -1, -1, -1, -1);
-
-            } else if(CSEPosition == 0){
-
-                sleep(200);
-                moves.linearMoveDistance(robot, 12, 1, -1, 1, -1);
-                moves.rotateArm(robot, 79);
-                moves.linearMoveDistance(robot, 5, 1, -1, 1, -1);
-
-                robot.releaseBlock();
-
-                moves.rotateArm(robot, -0.2);
-                moves.linearMoveDistance(robot, 15, -1, 1, -1, 1);
-
-
-                moves.rotateArm(robot, -100);
-                moves.linearMoveDistance(robot, 20, -1, -1, -1, -1);
-                moves.linearMoveDistance(robot, 19, -1, 1, -1, 1);
-
-                moves.linearMoveDistance(robot, 43, -1, -1, -1, -1);
-                moves.linearMoveDistance(robot, 10, 1, -1, -1, 1);
-                moves.linearMoveDistance(robot, 15, -1, -1, -1, -1);
-            }
-
-
-
-
-
-            counter++;*/
         }
+
+        drive.followTrajectory(beforeBarrier);
+        drive.turn(Math.toRadians(90));
+        drive.followTrajectory(endMove);
+    }
+
+    public void rotateArmTime(double t, int direction){
+
+        double time = getRuntime();
+        while(getRuntime() < time + t){
+            robot.arm.setPower(-0.4 * direction);
+        }
+        robot.arm.setPower(0);
     }
 }

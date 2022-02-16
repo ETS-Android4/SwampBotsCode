@@ -66,7 +66,7 @@ public class TestOpMode extends LinearOpMode {
         waitForStart();
         while(opModeIsActive() && counter == 0){
 
-                webcam.camera.setPipeline(testPipeline);
+                /*webcam.camera.setPipeline(testPipeline);
                 midpoint = testPipeline.getMidpoint();
 
 
@@ -108,13 +108,13 @@ public class TestOpMode extends LinearOpMode {
                     robot.setAllWheelPower(0);
                 }
 
-                moves.linearMoveDistance(robot, 0.3, 11, 1, 1, 1, 1);
+                //moves.linearMoveDistance(robot, 0.3, 11, 1, 1, 1, 1);
                 sleep(200);
                 robot.grabBlock();
 
 
                 sleep(10000);
-                counter++;
+                counter++;*/
 
         }
     }
