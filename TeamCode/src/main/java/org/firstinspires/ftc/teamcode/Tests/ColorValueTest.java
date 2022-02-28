@@ -13,6 +13,13 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class ColorValueTest extends OpenCvPipeline {
 
+    //IMPORTANT
+    /*
+        This is a quick test you can use to figure out the color value (in YCrCb)
+        of an object. There's only one region. You can quickly change the variables
+        for the size and location of the frame in FTC Dashboard if you need to.
+    */
+    
     static final Point TOP_LEFT = new Point(620,300);
     static final int LENGTH = 200;
 
