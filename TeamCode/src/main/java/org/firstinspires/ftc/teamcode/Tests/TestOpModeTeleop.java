@@ -17,7 +17,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name = "TestOpModeTeleop", group = "test")
 public class TestOpModeTeleop extends LinearOpMode {
-
+    
+    //Basically blank and for whatever testing uses you want
+    
     Robot robot = new Robot();
     Webcam webcam = new Webcam();
     CSEDeterminationPipeline csePipeline = null;
