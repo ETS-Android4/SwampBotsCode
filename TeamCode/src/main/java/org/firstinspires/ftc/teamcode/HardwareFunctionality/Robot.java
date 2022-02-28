@@ -36,7 +36,7 @@ public class Robot {
     //local OpMode members
     HardwareMap hw = null;
 
-
+    //Blank constructor is fine here
     public Robot(){
 
     }
@@ -68,7 +68,6 @@ public class Robot {
         //Set motor power to zero
         setAllWheelPower(0);
         arm.setPower(0);
-
         carousel.setPower(0);
 
         //Set zero power behavior on motors
@@ -86,7 +85,8 @@ public class Robot {
 
         leftHand.setPosition(0.74);
         rightHand.setPosition(0.41);
-
+        
+        //Make sure to initialize parameters, or IMU won't work
         imu = hw.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
