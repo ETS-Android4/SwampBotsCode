@@ -1,34 +1,22 @@
 package org.firstinspires.ftc.teamcode.Camera;
 
-import java.util.*;
-
-import android.provider.ContactsContract;
-
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.checkerframework.checker.units.qual.A;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
-import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 
 
 public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
         //Transition mats for storing different stages in process of finding contours.
+        //Please know what a Mat is before reading this program lol
         Mat YCrCb = new Mat();
         Mat Cb = new Mat();
         Mat threshold = new Mat();
@@ -36,63 +24,25 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
         Mat contoursOnPlainImage = new Mat();
         ArrayList<Point> midpoints = new ArrayList<>();
 
-        ArrayList<Point> emptyList = new ArrayList<>();
 
-
-
+        //The threshold value for detecting ducks (doesn't apply to blocks)
         static final int CB_CHAN_MASK_THRESHOLD = 85;
-        static final double DENSITY_UPRIGHT_THRESHOLD = 0.03;
 
-        //Used in morphing mask
+        //Size of the kernels in the morph masks functions
+        //Look up a video to understand what dilating and eroding are
+        //Idk what the ideal kernel size is...this was just already on the program
         Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3,3));
         Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(6,6));
 
 
         //Color constants for shapes we are manually drawing on frame
-        static final Scalar TEAL = new Scalar(3, 148, 252);
-        static final Scalar PURPLE = new Scalar(158, 52, 235);
         static final Scalar RED = new Scalar(255, 0, 0);
-        static final Scalar GREEN = new Scalar(0, 255, 0);
         static final Scalar BLUE = new Scalar(0, 0, 255);
 
+        //In Y-Cr-Cb, Cb is 3rd in order, so technically the 2nd index
         static final int CONTOUR_LINE_THICKNESS = 2;
         static final int CB_CHAN_IDX = 2;
 
-        static class AnalyzedObject{
-            ObjectOrientation orientation;
-            double angle;
-        }
-
-        //PROBABLY NOT SAME FOR OUR OBJECTS! BLOCKS AND BALLS ARE ALWAYS UPRIGHT, research this
-        enum ObjectOrientation{
-            UPRIGHT,
-            NOT_UPRIGHT
-        }
-
-        //List containing all of the detected objects. One copy for use on this file, the other's purpose is to be sent to the opmode
-        ArrayList<AnalyzedObject> internalObjectList = new ArrayList<>();
-        volatile ArrayList<AnalyzedObject> clientObjectList = new ArrayList<>();
-
-        //Stages of detecting object
-        enum Stage {
-            FINAL,
-            Cb,
-            MASK,
-            MASK_NR,
-            CONTOURS
-        }
-        Stage[] stages = Stage.values();
-        int stageNum = 0;
-
-        public void onViewportTapped() {
-            int nextStageNum = stageNum + 1;
-
-            if(nextStageNum >= stages.length){
-                nextStageNum = 0;
-            }
-
-            stageNum = nextStageNum;
-        }
 
 
         public Mat processFrame(Mat input){
@@ -102,19 +52,18 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
 
             if(contourList.size() != 0){
                 for(MatOfPoint contour : contourList){
-
+                    //The special function that does everything
                     analyzeContour(contour, input);
-
                 }
             }
 
-            Imgproc.line(contoursOnPlainImage, new Point(0,500), new Point(1280, 500), new Scalar(0,0,0), 3);
-            Imgproc.line(contoursOnPlainImage, new Point(0,420), new Point(1280, 400), new Scalar(0,0,0), 3);
             return contoursOnPlainImage;
         }
 
-
+        //Will find all the contours (hypothetically one per object)
+        //Will return an array of contours(represented as an array of points)
         public ArrayList<MatOfPoint> findContours(Mat input){
+
             //Initialize list we will eventually return
             ArrayList<MatOfPoint> contoursList = new ArrayList<>();
 
@@ -125,9 +74,9 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
             //Cleans out the noise in the frame for pixels with too small or too large of values.
             //However, since we are doing THRESH_BINARY_INV, all pixels values that are greater than the maxval will be set to zero.
             //And vice versa if it's under the threshold value.
-            //Then erode and dilate the image so the edges are cleaner and only object stands out
             Imgproc.threshold(Cb, threshold, CB_CHAN_MASK_THRESHOLD, 255, Imgproc.THRESH_BINARY_INV);
 
+            //Then erode and dilate the image so the edges are cleaner and only object stands out
             morphMask(threshold, morphedThreshold);
 
             //Algorithm to find contours for you. 3rd parameter contains information about contour hierarchy. RETR_EXTERNAL only
@@ -153,8 +102,12 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
         }
 
         public void analyzeContour(MatOfPoint contour, Mat input){
+            //this entire function will find the midpoints of a contour, add the midpoint
+            //to our array, and then draw the midpoint on the screen
+
+            //This function may be way more complex if you're analyzing other factors
+
             Point[] points = contour.toArray();
-            MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
 
             Point mid = findMidpoint(points);
             midpoints.add(mid);
@@ -162,6 +115,9 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
         }
 
         public Point findMidpoint(Point[] p){
+
+            //Takes all the x-coords, sums them up, and divides by the number of points
+            //Same thing for the y-coords
             double xSum = 0, ySum = 0;
             int numPoints = 0;
 
@@ -172,19 +128,13 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
                 ySum += point.y;
             }
 
+            //Coordinates can't be decimal, so we have to round
             return new Point(Math.round(xSum/numPoints), Math.round(ySum/numPoints));
         }
 
-        public void drawRotatedRect(RotatedRect rectangle, Mat image){
-            Point[] corners = new Point[4];
 
-            rectangle.points(corners);
-            for(int i = 0; i < 4; i++){
-                Imgproc.line(image, corners[i], corners[(i+1)%4], RED, 2);
-            }
-        }
-
-
+        //The getter method that returns the midpoint back to the opmode
+        //We don't want to return a null list, so just return a blank point if the array is empty
         public Point getMidpoint(){
             if(midpoints.size() > 0){
                 return midpoints.get(0);
@@ -192,7 +142,3 @@ public class ObjectOrientationAnalysisPipeline extends OpenCvPipeline {
             return new Point(0,0);
         }
 }
-
-
-
-
