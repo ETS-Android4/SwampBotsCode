@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.HardwareFunctionality;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -12,10 +11,25 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous
 public class Gyro extends LinearOpMode {
+
+    /*
+        To be honest, if you're using RoadRunner you don't need this class at all.
+        This was going to be using my custom PID Controller before I knew
+        RoadRunner was a thing. Please, use RoadRunner.
+        This is just example of how to use the PID, and it wouldn't hurt you
+        to understand Orientation objects and how the angles are formatted
+        because I ran into bugs that wouldn't have been solved without that
+        knowledge.
+
+        I'm not going to comment this code...go through and digest it by yourself.
+        All this code was from copied from a Youtube video, so you can find explanations
+        there if you need. Otherwise, after a bit of thought after looking at this,
+        you can probably figure out how the methods work, it's pretty simple.
+     */
+
+
     Robot robot = new Robot();
-
     private ElapsedTime runtime = new ElapsedTime();
-
 
     private Orientation lastAngles = new Orientation();
     private double currAngle = 0.0;
